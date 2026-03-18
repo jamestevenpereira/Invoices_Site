@@ -34,14 +34,25 @@ import type { Quote, QuoteItem, Service } from '../../../core/models';
     </div>
 
     <div class="meta-fields">
-      <input [(ngModel)]="clientName" name="clientName" placeholder="Nome do cliente" />
       <input
-        [(ngModel)]="clientEmail"
+        [ngModel]="clientName()"
+        (ngModelChange)="clientName.set($event)"
+        name="clientName"
+        placeholder="Nome do cliente"
+      />
+      <input
+        [ngModel]="clientEmail()"
+        (ngModelChange)="clientEmail.set($event)"
         name="clientEmail"
         type="email"
         placeholder="Email do cliente"
       />
-      <textarea [(ngModel)]="notes" name="notes" placeholder="Notas (opcional)"></textarea>
+      <textarea
+        [ngModel]="notes()"
+        (ngModelChange)="notes.set($event)"
+        name="notes"
+        placeholder="Notas (opcional)"
+      ></textarea>
     </div>
 
     <div class="builder-panels">
@@ -251,9 +262,9 @@ export class QuoteBuilderComponent implements OnInit {
   private pdfService = inject(QuotePdfService);
   private router = inject(Router);
 
-  clientName = '';
-  clientEmail = '';
-  notes = '';
+  clientName = signal('');
+  clientEmail = signal('');
+  notes = signal('');
   hourlyRate = signal(15);
   items = signal<QuoteItem[]>([]);
   saving = signal(false);
@@ -266,17 +277,22 @@ export class QuoteBuilderComponent implements OnInit {
   totalAmount = computed(() => this.totalHours() * this.hourlyRate());
 
   async ngOnInit() {
-    const [services, settings] = await Promise.all([
-      this.catalogueService.getServices(),
-      this.settingsService.getSettings(),
-    ]);
-    this.hourlyRate.set(settings.hourly_rate);
-    const active = services.filter((s) => s.active);
-    const cats = [...new Set(active.map((s) => s.category))].sort();
-    this.categories.set(cats);
-    this.servicesByCategory.set(
-      Object.fromEntries(cats.map((c) => [c, active.filter((s) => s.category === c)])),
-    );
+    try {
+      const [services, settings] = await Promise.all([
+        this.catalogueService.getServices(),
+        this.settingsService.getSettings(),
+      ]);
+      this.hourlyRate.set(settings.hourly_rate);
+      const cats = [...new Set(services.filter((s) => s.active).map((s) => s.category))].sort();
+      this.categories.set(cats);
+      this.servicesByCategory.set(
+        Object.fromEntries(
+          cats.map((c) => [c, services.filter((s) => s.category === c && s.active)]),
+        ),
+      );
+    } catch (e: unknown) {
+      this.error.set(e instanceof Error ? e.message : 'Erro ao carregar dados');
+    }
   }
 
   addService(s: Service) {
@@ -305,11 +321,11 @@ export class QuoteBuilderComponent implements OnInit {
     this.error.set('');
     try {
       const quote = await this.quoteService.createQuote({
-        client_name: this.clientName,
-        client_email: this.clientEmail,
+        client_name: this.clientName(),
+        client_email: this.clientEmail(),
         hourly_rate: this.hourlyRate(),
         items: this.items().map((i) => ({ ...i, subtotal: i.hours * this.hourlyRate() })),
-        notes: this.notes,
+        notes: this.notes(),
       });
       this.savedQuote.set(quote);
       this.router.navigate(['/admin/quotes', quote.id]);

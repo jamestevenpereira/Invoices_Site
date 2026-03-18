@@ -8,19 +8,25 @@ const COL = { service: MARGIN, hours: 120, rate: 150, sub: 180 };
 
 @Injectable({ providedIn: 'root' })
 export class QuotePdfService {
-  generatePdf(quote: Quote, vatMode: 'exempt' | 'standard' = 'exempt'): void {
+  generatePdf(
+    quote: Quote,
+    vatMode: 'exempt' | 'standard' = 'exempt',
+    agencyName: string = 'A Minha Agência Web',
+  ): void {
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     let y = MARGIN;
 
     // Header
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(16);
-    doc.text('A Minha Agência Web', MARGIN, y);
+    doc.text(agencyName, MARGIN, y);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.text(quote.number, PAGE_W - MARGIN, y, { align: 'right' });
     y += 5;
-    doc.text(new Date(quote.created_at).toLocaleDateString('pt-PT'), PAGE_W - MARGIN, y, { align: 'right' });
+    doc.text(new Date(quote.created_at).toLocaleDateString('pt-PT'), PAGE_W - MARGIN, y, {
+      align: 'right',
+    });
     y += 12;
 
     // Client
@@ -89,7 +95,8 @@ export class QuotePdfService {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
-      doc.text(`Notas: ${quote.notes}`, MARGIN, y);
+      const noteLines = doc.splitTextToSize(`Notas: ${quote.notes}`, PAGE_W - MARGIN * 2);
+      doc.text(noteLines, MARGIN, y);
       doc.setTextColor(0, 0, 0);
     }
 

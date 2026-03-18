@@ -52,9 +52,12 @@ describe('POST /api/quotes/:id/send', () => {
     (Resend as jest.Mock).mockImplementationOnce(() => ({
       emails: { send: jest.fn().mockRejectedValue(new Error('Resend error')) },
     }));
+    const supabaseMock = require('../../_lib/supabase').createAdminClient();
+    supabaseMock.update.mockClear();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn(), end: jest.fn() } as any;
     await handler(makeReq(), res);
     expect(res.status).toHaveBeenCalledWith(500);
+    expect(supabaseMock.update).not.toHaveBeenCalled();
   });
 });

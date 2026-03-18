@@ -48,7 +48,11 @@ import type { Quote, Settings } from '../../../core/models';
       }
 
       <div class="preview-wrap">
-        <app-quote-preview [quote]="quote()!" [vatMode]="settings()?.vat_mode ?? 'exempt'" />
+        <app-quote-preview
+          [quote]="quote()!"
+          [vatMode]="settings()?.vat_mode ?? 'exempt'"
+          [agencyName]="settings()?.agency_name ?? 'A Minha Agência Web'"
+        />
       </div>
     } @else {
       <p>A carregar...</p>
@@ -117,18 +121,27 @@ export class QuoteDetailComponent implements OnInit {
   error = signal('');
 
   async ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id')!;
-    const [quote, settings] = await Promise.all([
-      this.quoteService.getQuote(id),
-      this.settingsService.getSettings(),
-    ]);
-    this.quote.set(quote);
-    this.settings.set(settings);
+    try {
+      const id = this.route.snapshot.paramMap.get('id')!;
+      const [quote, settings] = await Promise.all([
+        this.quoteService.getQuote(id),
+        this.settingsService.getSettings(),
+      ]);
+      this.quote.set(quote);
+      this.settings.set(settings);
+    } catch (e: unknown) {
+      this.error.set(e instanceof Error ? e.message : 'Erro ao carregar orçamento');
+    }
   }
 
   downloadPdf() {
     const q = this.quote();
-    if (q) this.pdfService.generatePdf(q, this.settings()?.vat_mode ?? 'exempt');
+    if (q)
+      this.pdfService.generatePdf(
+        q,
+        this.settings()?.vat_mode ?? 'exempt',
+        this.settings()?.agency_name ?? 'A Minha Agência Web',
+      );
   }
 
   async sendEmail() {
@@ -138,7 +151,10 @@ export class QuoteDetailComponent implements OnInit {
     this.sendSuccess.set(false);
     this.error.set('');
     try {
-      await apiRequest(`/api/quotes/${q.id}/send`, { method: 'POST' });
+      const result = await apiRequest<{ success: boolean }>(`/api/quotes/${q.id}/send`, {
+        method: 'POST',
+      });
+      if (!result) throw new Error('Falha ao enviar — tente novamente');
       this.quote.update((current) =>
         current ? { ...current, sent_at: new Date().toISOString() } : null,
       );

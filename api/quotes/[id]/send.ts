@@ -3,6 +3,14 @@ import { Resend } from 'resend';
 import { verifyJwt } from '../../_lib/jwt';
 import { createAdminClient } from '../../_lib/supabase';
 
+function esc(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).end();
   if (!await verifyJwt(req)) return res.status(401).json({ message: 'Não autorizado' });
@@ -21,7 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const senderEmail = (settings?.sender_email as string | null) ?? 'noreply@agencia.pt';
 
   const itemsHtml = (quote.items as Array<{ name: string; hours: number }>)
-    .map(i => `<tr><td>${i.name}</td><td>${i.hours}h</td><td>€${(i.hours * (quote.hourly_rate as number)).toFixed(2)}</td></tr>`)
+    .map(i => `<tr><td>${esc(i.name)}</td><td>${i.hours}h</td><td>€${(i.hours * (quote.hourly_rate as number)).toFixed(2)}</td></tr>`)
     .join('');
 
   const vatLine = (settings?.vat_mode as string) === 'standard'
@@ -30,15 +38,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     : `<tr><td colspan="3" style="font-size:12px;color:#64748b">Isento nos termos do art.º 53.º do CIVA</td></tr>`;
 
   const html = `
-    <h2>${docType} ${quote.number}</h2>
-    <p>Exmo(a) ${quote.client_name},</p>
+    <h2>${docType} ${esc(quote.number as string)}</h2>
+    <p>Exmo(a) ${esc(quote.client_name as string)},</p>
     <p>${isInvoice ? 'Segue em anexo a fatura relativa aos serviços prestados.' : 'Segue o orçamento solicitado.'}</p>
     <table border="1" cellpadding="8" style="border-collapse:collapse;width:100%">
       <thead><tr><th>Serviço</th><th>Horas</th><th>Subtotal</th></tr></thead>
       <tbody>${itemsHtml}</tbody>
       <tfoot>${vatLine}</tfoot>
     </table>
-    ${(quote.notes as string) ? `<p><em>Notas: ${quote.notes}</em></p>` : ''}
+    ${(quote.notes as string) ? `<p><em>Notas: ${esc(quote.notes as string)}</em></p>` : ''}
     <p>Com os melhores cumprimentos</p>
   `;
 
@@ -47,9 +55,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     resend.emails.send({
       from: senderEmail,
       to: [quote.client_email as string],
-      subject: `${docType} ${quote.number} — ${agencyName}`,
+      subject: `${docType} ${esc(quote.number as string)} — ${agencyName}`,
       html,
-      text: `${docType} ${quote.number}\n\nCliente: ${quote.client_name}\nTotal: €${quote.total_amount}`,
+      text: `${docType} ${esc(quote.number as string)}\n\nCliente: ${esc(quote.client_name as string)}\nTotal: €${quote.total_amount}`,
     }),
   ];
 
@@ -58,7 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       resend.emails.send({
         from: senderEmail,
         to: [settings.owner_email as string],
-        subject: `[Cópia] ${docType} ${quote.number} enviado para ${quote.client_email}`,
+        subject: `[Cópia] ${docType} ${esc(quote.number as string)} enviado para ${esc(quote.client_email as string)}`,
         html: `<p>Cópia enviada em ${new Date().toLocaleString('pt-PT')}.</p>${html}`,
         text: `Cópia enviada para ${quote.client_email}`,
       })

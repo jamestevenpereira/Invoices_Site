@@ -62,7 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .limit(1);
 
       const lastFatNum = (lastFat as Array<{ number: string }> | null)?.[0]?.number;
-      const next = lastFatNum ? parseInt(lastFatNum.split('-')[2]) + 1 : 1;
+      const next = lastFatNum ? parseInt(lastFatNum.split('-')[2], 10) + 1 : 1;
       updates['number'] = `FAT-${year}-${String(next).padStart(3, '0')}`;
       updates['quote_number'] = (current?.number as string | null) ?? null;
     }
@@ -75,6 +75,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     .select()
     .single();
 
-  if (error) return res.status(500).json({ message: 'Erro ao actualizar' });
+  if (error) {
+    if (error.code === '23505') return res.status(409).json({ message: 'Número de documento já existe — tente novamente' });
+    return res.status(500).json({ message: 'Erro ao actualizar' });
+  }
   return res.status(200).json(data);
 }
