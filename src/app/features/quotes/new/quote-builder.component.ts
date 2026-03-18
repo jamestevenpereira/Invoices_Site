@@ -13,7 +13,7 @@ import { QuoteService } from '../../../core/services/quote.service';
 import { ServiceCatalogueService } from '../../../core/services/service-catalogue.service';
 import { SettingsService } from '../../../core/services/settings.service';
 import { QuotePdfService } from '../../../core/services/quote-pdf.service';
-import type { Quote, QuoteItem, Service } from '../../../core/models';
+import type { Quote, QuoteItem, Service, Settings } from '../../../core/models';
 
 @Component({
   selector: 'app-quote-builder',
@@ -270,6 +270,7 @@ export class QuoteBuilderComponent implements OnInit {
   saving = signal(false);
   error = signal('');
   savedQuote = signal<Quote | null>(null);
+  settings = signal<Settings | null>(null);
   categories = signal<string[]>([]);
   servicesByCategory = signal<Record<string, Service[]>>({});
 
@@ -282,6 +283,7 @@ export class QuoteBuilderComponent implements OnInit {
         this.catalogueService.getServices(),
         this.settingsService.getSettings(),
       ]);
+      this.settings.set(settings);
       this.hourlyRate.set(settings.hourly_rate);
       const cats = [...new Set(services.filter((s) => s.active).map((s) => s.category))].sort();
       this.categories.set(cats);
@@ -338,6 +340,11 @@ export class QuoteBuilderComponent implements OnInit {
 
   downloadPdf() {
     const q = this.savedQuote();
-    if (q) this.pdfService.generatePdf(q);
+    if (q)
+      this.pdfService.generatePdf(
+        q,
+        this.settings()?.vat_mode ?? 'exempt',
+        this.settings()?.agency_name ?? 'A Minha Agência Web',
+      );
   }
 }

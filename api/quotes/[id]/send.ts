@@ -57,7 +57,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       to: [quote.client_email as string],
       subject: `${docType} ${esc(quote.number as string)} — ${agencyName}`,
       html,
-      text: `${docType} ${esc(quote.number as string)}\n\nCliente: ${esc(quote.client_name as string)}\nTotal: €${quote.total_amount}`,
+      text: `${docType} ${quote.number as string}\n\nCliente: ${quote.client_name as string}\nTotal: €${quote.total_amount}`,
     }),
   ];
 
