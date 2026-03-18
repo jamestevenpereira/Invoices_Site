@@ -29,6 +29,7 @@ describe('AuthService', () => {
     });
     await service.login('password');
     expect(localStorage.getItem('admin_token')).toBe('header.payload.sig');
+    expect(service.isAuthenticated()).toBe(true);
   });
 
   it('login() throws on wrong password', async () => {

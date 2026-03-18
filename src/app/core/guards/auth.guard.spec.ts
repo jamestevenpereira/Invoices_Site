@@ -29,5 +29,6 @@ describe('authGuard', () => {
     authService.isAuthenticated.mockReturnValue(false);
     const result = TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
     expect(router.createUrlTree).toHaveBeenCalledWith(['/login']);
+    expect(result).toBe(router.createUrlTree.mock.results[0].value);
   });
 });
