@@ -9,7 +9,9 @@
       "Bash(npm install:*)",
       "Bash(npm test:*)",
       "Bash(npm run:*)",
-      "Bash(python -c \"import json; a=json.load\\(open\\(''angular.json''\\)\\); prod=a[''projects''][''invoices-site''][''architect''][''build''][''configurations''][''production'']; print\\(json.dumps\\(prod, indent=2\\)\\)\")"
+      "Bash(python -c \"import json; a=json.load\\(open\\(''angular.json''\\)\\); prod=a[''projects''][''invoices-site''][''architect''][''build''][''configurations''][''production'']; print\\(json.dumps\\(prod, indent=2\\)\\)\")",
+      "Bash(npx jest:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

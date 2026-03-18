@@ -51,3 +51,5 @@ src/environments/environment.prod.ts
 
 # Superpowers agent files
 .superpowers/
+.vercel
+.env*.local
