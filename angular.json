@@ -29,6 +29,12 @@
                 "input": "public"
               }
             ],
+            "allowedCommonJsDependencies": [
+              "html2canvas",
+              "canvg",
+              "raf",
+              "rgbcolor"
+            ],
             "styles": [
               "src/styles.scss"
             ]
