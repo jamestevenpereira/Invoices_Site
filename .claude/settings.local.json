@@ -8,7 +8,8 @@
       "Bash(done)",
       "Bash(npm install:*)",
       "Bash(npm test:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(python -c \"import json; a=json.load\\(open\\(''angular.json''\\)\\); prod=a[''projects''][''invoices-site''][''architect''][''build''][''configurations''][''production'']; print\\(json.dumps\\(prod, indent=2\\)\\)\")"
     ]
   }
 }
