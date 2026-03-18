@@ -2,8 +2,8 @@ const TOKEN_KEY = 'admin_token';
 
 export async function apiRequest<T>(
   path: string,
-  options: RequestInit = {}
-): Promise<T> {
+  options: RequestInit = {},
+): Promise<T | undefined> {
   const token = localStorage.getItem(TOKEN_KEY);
   const res = await fetch(path, {
     ...options,
@@ -18,6 +18,6 @@ export async function apiRequest<T>(
     throw new Error(error.message ?? 'Erro desconhecido');
   }
   // 204 No Content (e.g. DELETE) — no body to parse
-  if (res.status === 204) return undefined as T;
+  if (res.status === 204) return undefined;
   return res.json() as Promise<T>;
 }
