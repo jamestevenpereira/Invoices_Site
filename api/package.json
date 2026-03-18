@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "resend": "*",
-    "jose": "*",
-    "zod": "*",
-    "@supabase/supabase-js": "*"
+    "resend": "^6.9.4",
+    "jose": "^6.2.1",
+    "zod": "^4.3.6",
+    "@supabase/supabase-js": "^2.99.2"
   }
 }
