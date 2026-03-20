@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { signToken } from '../_lib/jwt';
+import { signToken } from '../_lib/jwt.js';
 
 const schema = z.object({ password: z.string().min(1) });
 

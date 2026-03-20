@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { verifyJwt } from '../_lib/jwt';
-import { createAdminClient } from '../_lib/supabase';
+import { verifyJwt } from '../_lib/jwt.js';
+import { createAdminClient } from '../_lib/supabase.js';
 
 const itemSchema = z.object({
   service_id: z.string(),

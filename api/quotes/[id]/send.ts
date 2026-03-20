@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
-import { verifyJwt } from '../../_lib/jwt';
-import { createAdminClient } from '../../_lib/supabase';
+import { verifyJwt } from '../../_lib/jwt.js';
+import { createAdminClient } from '../../_lib/supabase.js';
 
 function esc(s: string): string {
   return s
