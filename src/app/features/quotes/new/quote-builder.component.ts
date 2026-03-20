@@ -13,12 +13,13 @@ import { QuoteService } from '../../../core/services/quote.service';
 import { ServiceCatalogueService } from '../../../core/services/service-catalogue.service';
 import { SettingsService } from '../../../core/services/settings.service';
 import { QuotePdfService } from '../../../core/services/quote-pdf.service';
+import { QuotePreviewComponent } from '../../../shared/components/quote-preview/quote-preview.component';
 import type { Quote, QuoteItem, Service, Settings } from '../../../core/models';
 
 @Component({
   selector: 'app-quote-builder',
   standalone: true,
-  imports: [FormsModule, CurrencyPipe],
+  imports: [FormsModule, CurrencyPipe, QuotePreviewComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './quote-builder.component.html',
   styleUrl: './quote-builder.component.scss',
@@ -41,9 +42,27 @@ export class QuoteBuilderComponent implements OnInit {
   settings = signal<Settings | null>(null);
   categories = signal<string[]>([]);
   servicesByCategory = signal<Record<string, Service[]>>({});
+  showPreview = signal(false);
 
   totalHours = computed(() => this.items().reduce((s, i) => s + i.hours, 0));
   totalAmount = computed(() => this.totalHours() * this.hourlyRate());
+
+  previewQuote = computed<Quote>(() => ({
+    id: 'draft',
+    number: 'ORC-RASCUNHO',
+    client_name: this.clientName() || 'Nome do cliente',
+    client_email: this.clientEmail() || '',
+    status: 'quote',
+    hourly_rate: this.hourlyRate(),
+    items: this.items(),
+    notes: this.notes(),
+    total_hours: this.totalHours(),
+    total_amount: this.totalAmount(),
+    quote_number: null,
+    sent_at: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  }));
 
   async ngOnInit() {
     try {
@@ -67,7 +86,7 @@ export class QuoteBuilderComponent implements OnInit {
 
   addService(s: Service) {
     if (this.items().some((i) => i.service_id === s.id)) return;
-    const hours = s.default_hours;
+    const hours = Number(s.default_hours) || 0;
     this.items.update((list) => [
       ...list,
       { service_id: s.id, name: s.name, hours, subtotal: hours * this.hourlyRate() },

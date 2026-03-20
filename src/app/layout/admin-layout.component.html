@@ -1,10 +1,13 @@
 <div class="admin-shell">
   <nav class="sidebar">
     <div class="brand">Facturação</div>
-    <a routerLink="/admin/quotes" routerLinkActive="active">Orçamentos</a>
-    <a routerLink="/admin/services" routerLinkActive="active">Serviços</a>
-    <a routerLink="/admin/settings" routerLinkActive="active">Definições</a>
-    <button class="logout" (click)="logout()">Sair</button>
+    <a class="nav-link" routerLink="/admin/quotes" routerLinkActive="active">Orçamentos</a>
+    <a class="nav-link" routerLink="/admin/services" routerLinkActive="active">Serviços</a>
+    <a class="nav-link" routerLink="/admin/settings" routerLinkActive="active">Definições</a>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-footer">
+      <button class="logout" (click)="logout()">Sair</button>
+    </div>
   </nav>
   <main class="content">
     <router-outlet />

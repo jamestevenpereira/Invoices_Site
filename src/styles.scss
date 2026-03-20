@@ -1,1 +1,116 @@
-/* You can add global styles to this file, and also import other style files */
+/* ─── Design tokens ─────────────────────────────────────────────────── */
+:root {
+  --c-primary:        #4f46e5;
+  --c-primary-hover:  #4338ca;
+  --c-primary-light:  #eef2ff;
+
+  --c-bg:             #f8fafc;
+  --c-surface:        #ffffff;
+  --c-border:         #e2e8f0;
+  --c-border-strong:  #cbd5e1;
+
+  --c-text:           #1e293b;
+  --c-text-2:         #64748b;
+  --c-text-muted:     #94a3b8;
+
+  --c-sidebar:        #0f172a;
+
+  --c-danger:         #ef4444;
+  --c-danger-bg:      #fef2f2;
+  --c-success:        #10b981;
+  --c-success-bg:     #f0fdf4;
+  --c-warn:           #f59e0b;
+  --c-warn-bg:        #fffbeb;
+
+  --radius-sm:        5px;
+  --radius:           8px;
+  --radius-lg:        12px;
+
+  --shadow-sm:        0 1px 2px rgba(0,0,0,.06);
+  --shadow:           0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.06);
+  --shadow-lg:        0 4px 24px rgba(0,0,0,.12);
+}
+
+/* ─── Reset ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--c-text);
+  background: var(--c-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Global atoms ───────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  padding: .5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: .875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background .15s, box-shadow .15s, opacity .15s;
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: 1;
+
+  &:disabled { opacity: .55; cursor: not-allowed; }
+}
+
+.btn-primary {
+  @extend .btn;
+  background: var(--c-primary);
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(79,70,229,.3);
+
+  &:not(:disabled):hover { background: var(--c-primary-hover); }
+}
+
+.btn-secondary {
+  @extend .btn;
+  background: var(--c-surface);
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
+
+  &:not(:disabled):hover { background: var(--c-bg); }
+}
+
+.btn-ghost {
+  @extend .btn;
+  background: transparent;
+  color: var(--c-text-2);
+
+  &:not(:disabled):hover { background: var(--c-bg); color: var(--c-text); }
+}
+
+.page-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: .2rem .6rem;
+  border-radius: 999px;
+  font-size: .7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+
+  &.badge-quote    { background: var(--c-warn-bg);    color: var(--c-warn);    }
+  &.badge-invoice  { background: var(--c-success-bg); color: var(--c-success); }
+}

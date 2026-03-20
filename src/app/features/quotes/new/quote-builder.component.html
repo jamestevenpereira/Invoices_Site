@@ -1,96 +1,181 @@
-<div class="builder-header">
-  <h2>Novo Orçamento</h2>
-  <div class="actions">
-    @if (savedQuote()) {
-      <button (click)="downloadPdf()" class="btn-secondary">Descarregar PDF</button>
-    }
-    <button (click)="save()" [disabled]="saving() || items().length === 0" class="btn-primary">
-      {{ saving() ? 'A guardar...' : 'Guardar rascunho' }}
-    </button>
-  </div>
-</div>
+<div class="builder-layout">
 
-<div class="meta-fields">
-  <input
-    [ngModel]="clientName()"
-    (ngModelChange)="clientName.set($event)"
-    name="clientName"
-    placeholder="Nome do cliente"
-  />
-  <input
-    [ngModel]="clientEmail()"
-    (ngModelChange)="clientEmail.set($event)"
-    name="clientEmail"
-    type="email"
-    placeholder="Email do cliente"
-  />
-  <textarea
-    [ngModel]="notes()"
-    (ngModelChange)="notes.set($event)"
-    name="notes"
-    placeholder="Notas (opcional)"
-  ></textarea>
-</div>
-
-<div class="builder-panels">
-  <div class="panel-services">
-    <h3>Catálogo de Serviços</h3>
-    @for (category of categories(); track category) {
-      <div class="category">
-        <h4>{{ category }}</h4>
-        @for (s of servicesByCategory()[category]; track s.id) {
-          <button class="service-chip" (click)="addService(s)">
-            {{ s.name }} <span>{{ s.default_hours }}h</span>
-          </button>
-        }
-      </div>
-    }
-  </div>
-
-  <div class="panel-preview">
-    <div class="items-list">
-      @for (item of items(); track item.service_id) {
-        <div class="item-row">
-          <span class="item-name">{{ item.name }}</span>
-          <input
-            type="number"
-            [value]="item.hours"
-            min="0"
-            step="0.5"
-            (change)="updateHours(item.service_id, +$any($event.target).value)"
-          />
-          <span class="item-sub">{{
-            item.subtotal | currency: 'EUR' : 'symbol' : '1.2-2' : 'pt'
-          }}</span>
-          <button (click)="removeItem(item.service_id)" class="remove">✕</button>
+  <!-- Catalogue sidebar -->
+  <aside class="catalogue-panel">
+    <div class="catalogue-header">
+      <span class="panel-label">Catálogo</span>
+    </div>
+    <div class="catalogue-body">
+      @if (categories().length === 0) {
+        <p class="catalogue-empty">Nenhum serviço activo.<br>Vai a Serviços para criar.</p>
+      }
+      @for (category of categories(); track category) {
+        <div class="cat-group">
+          <span class="cat-label">{{ category }}</span>
+          @for (s of servicesByCategory()[category]; track s.id) {
+            <button
+              class="service-chip"
+              [class.added]="items().some(i => i.service_id === s.id)"
+              (click)="addService(s)"
+            >
+              <span class="chip-name">{{ s.name }}</span>
+              <span class="chip-hours">{{ s.default_hours }}h</span>
+            </button>
+          }
         </div>
-      } @empty {
-        <p class="empty">Clica num serviço para o adicionar.</p>
       }
     </div>
+  </aside>
 
-    <div class="rate-row">
-      <label>Custo por hora</label>
-      <input
-        type="range"
-        min="10"
-        max="100"
-        step="1"
-        [value]="hourlyRate()"
-        (input)="hourlyRate.set(+$any($event.target).value)"
-      />
-      <span class="rate-val">€{{ hourlyRate() }}/h</span>
+  <!-- Main editor -->
+  <div class="editor-panel">
+
+    <!-- Header -->
+    <div class="editor-header">
+      <h1 class="page-title">Novo Orçamento</h1>
+      <div class="view-toggle">
+        <button
+          class="toggle-btn"
+          [class.active]="!showPreview()"
+          (click)="showPreview.set(false)"
+        >Editar</button>
+        <button
+          class="toggle-btn"
+          [class.active]="showPreview()"
+          (click)="showPreview.set(true)"
+        >Pré-visualizar</button>
+      </div>
+      <div class="header-actions">
+        @if (savedQuote()) {
+          <button (click)="downloadPdf()" class="btn-secondary">Descarregar PDF</button>
+        }
+        <button
+          (click)="save()"
+          [disabled]="saving() || items().length === 0"
+          class="btn-primary"
+        >{{ saving() ? 'A guardar…' : 'Guardar' }}</button>
+      </div>
     </div>
 
-    <div class="totals-summary">
-      <span>{{ totalHours() }}h no total</span>
-      <span class="total-amount">{{
-        totalAmount() | currency: 'EUR' : 'symbol' : '1.2-2' : 'pt'
-      }}</span>
-    </div>
+    @if (error()) {
+      <div class="error-banner">{{ error() }}</div>
+    }
+
+    <!-- Editor view -->
+    @if (!showPreview()) {
+      <div class="editor-body">
+
+        <!-- Client info -->
+        <div class="section-card">
+          <div class="section-title">Dados do cliente</div>
+          <div class="fields-row">
+            <div class="field">
+              <label class="field-label">Nome</label>
+              <input
+                class="field-input"
+                [ngModel]="clientName()"
+                (ngModelChange)="clientName.set($event)"
+                name="clientName"
+                placeholder="Nome do cliente"
+              />
+            </div>
+            <div class="field">
+              <label class="field-label">Email</label>
+              <input
+                class="field-input"
+                [ngModel]="clientEmail()"
+                (ngModelChange)="clientEmail.set($event)"
+                name="clientEmail"
+                type="email"
+                placeholder="email@cliente.pt"
+              />
+            </div>
+          </div>
+          <div class="field" style="margin-top:.75rem">
+            <label class="field-label">Notas <span class="optional">(opcional)</span></label>
+            <textarea
+              class="field-input field-textarea"
+              [ngModel]="notes()"
+              (ngModelChange)="notes.set($event)"
+              name="notes"
+              placeholder="Condições de pagamento, prazos, observações…"
+              rows="2"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Items -->
+        <div class="section-card">
+          <div class="section-title">Serviços</div>
+
+          @if (items().length === 0) {
+            <div class="items-empty">
+              <span>Clica num serviço do catálogo para o adicionar.</span>
+            </div>
+          } @else {
+            <div class="items-table">
+              <div class="items-head">
+                <span class="col-name">Serviço</span>
+                <span class="col-hours">Horas</span>
+                <span class="col-price">€/h</span>
+                <span class="col-sub">Subtotal</span>
+                <span class="col-rm"></span>
+              </div>
+              @for (item of items(); track item.service_id) {
+                <div class="item-row">
+                  <span class="col-name">{{ item.name }}</span>
+                  <input
+                    class="col-hours hours-input"
+                    type="number"
+                    [value]="item.hours"
+                    min="0"
+                    step="0.5"
+                    (change)="updateHours(item.service_id, +$any($event.target).value)"
+                  />
+                  <span class="col-price rate-cell">{{ hourlyRate() | currency:'EUR':'symbol':'1.0-0' }}</span>
+                  <span class="col-sub subtotal-cell">{{ item.subtotal | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  <button class="col-rm remove-btn" (click)="removeItem(item.service_id)" title="Remover">✕</button>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Rate + Totals -->
+          <div class="rate-totals">
+            <div class="rate-row">
+              <label class="field-label">Custo por hora</label>
+              <div class="rate-control">
+                <input
+                  type="range"
+                  min="10"
+                  max="200"
+                  step="5"
+                  [value]="hourlyRate()"
+                  (input)="hourlyRate.set(+$any($event.target).value)"
+                />
+                <span class="rate-value">{{ hourlyRate() | currency:'EUR':'symbol':'1.0-0' }}/h</span>
+              </div>
+            </div>
+            <div class="totals-row">
+              <div class="total-hours">{{ totalHours() }}h no total</div>
+              <div class="total-amount">{{ totalAmount() | currency:'EUR':'symbol':'1.2-2' }}</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    }
+
+    <!-- Preview view -->
+    @if (showPreview()) {
+      <div class="preview-wrapper">
+        <app-quote-preview
+          [quote]="previewQuote()"
+          [vatMode]="settings()?.vat_mode ?? 'exempt'"
+          [agencyName]="settings()?.agency_name ?? 'A Minha Agência Web'"
+        />
+      </div>
+    }
+
   </div>
 </div>
-
-@if (error()) {
-  <p class="error">{{ error() }}</p>
-}
