@@ -1,0 +1,80 @@
+.preview {
+  font-family: system-ui, sans-serif;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.agency {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.doc-number {
+  font-weight: 600;
+}
+
+.doc-date {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.client-info {
+  margin-bottom: 1.5rem;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+
+  th {
+    background: #f1f5f9;
+    padding: 0.5rem;
+    text-align: left;
+    font-size: 0.8rem;
+  }
+
+  td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+}
+
+.totals {
+  text-align: right;
+  padding-top: 0.75rem;
+  border-top: 2px solid #e2e8f0;
+}
+
+.total-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2rem;
+  padding: 0.25rem 0;
+}
+
+.grand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-top: 1px solid #1e293b;
+  padding-top: 0.5rem;
+}
+
+.vat-row.exempt {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.5rem;
+}
+
+.notes {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 6px;
+}

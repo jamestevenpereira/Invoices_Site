@@ -1,0 +1,44 @@
+@if (quote()) {
+  <div class="detail-header">
+    <div>
+      <h2>{{ quote()!.number }}</h2>
+      @if (quote()!.quote_number) {
+        <p class="sub">Convertido de {{ quote()!.quote_number }}</p>
+      }
+    </div>
+    <div class="actions">
+      <button (click)="downloadPdf()" class="btn-secondary">Descarregar PDF</button>
+      <button (click)="sendEmail()" [disabled]="sending()" class="btn-secondary">
+        {{
+          sending()
+            ? 'A enviar...'
+            : quote()!.sent_at
+              ? 'Reenviar por email'
+              : 'Enviar por email'
+        }}
+      </button>
+      @if (quote()!.status === 'quote') {
+        <button (click)="convert()" [disabled]="converting()" class="btn-convert">
+          {{ converting() ? 'A converter...' : 'Converter em Fatura' }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (sendSuccess()) {
+    <p class="success">Email enviado com sucesso.</p>
+  }
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  <div class="preview-wrap">
+    <app-quote-preview
+      [quote]="quote()!"
+      [vatMode]="settings()?.vat_mode ?? 'exempt'"
+      [agencyName]="settings()?.agency_name ?? 'A Minha Agência Web'"
+    />
+  </div>
+} @else {
+  <p>A carregar...</p>
+}

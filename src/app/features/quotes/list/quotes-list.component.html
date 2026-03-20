@@ -1,0 +1,45 @@
+<div class="page-header">
+  <h2>Orçamentos &amp; Faturas</h2>
+  <a routerLink="/admin/quotes/new" class="btn-primary">+ Novo Orçamento</a>
+</div>
+
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+}
+
+@if (quotes().length === 0) {
+  <p class="empty">Ainda não há orçamentos. Cria o primeiro!</p>
+} @else {
+  <table class="quotes-table">
+    <thead>
+      <tr>
+        <th>Número</th>
+        <th>Cliente</th>
+        <th>Estado</th>
+        <th>Total</th>
+        <th>Data</th>
+        <th>Enviado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (q of quotes(); track q.id) {
+        <tr>
+          <td>
+            <a [routerLink]="['/admin/quotes', q.id]">{{ q.number }}</a>
+          </td>
+          <td>{{ q.client_name }}</td>
+          <td>
+            <span class="badge" [class.invoice]="q.status === 'invoice'">
+              {{ q.status === 'invoice' ? 'Fatura' : 'Orçamento' }}
+            </span>
+          </td>
+          <td>{{ q.total_amount | currency: 'EUR' : 'symbol' : '1.2-2' : 'pt' }}</td>
+          <td>{{ q.created_at | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ q.sent_at ? (q.sent_at | date: 'dd/MM/yyyy') : '—' }}</td>
+          <td><button (click)="downloadPdf(q)" class="btn-sm">PDF</button></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

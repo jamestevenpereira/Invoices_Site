@@ -1,0 +1,51 @@
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.sub {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.preview-wrap {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 700px;
+}
+
+.btn-secondary {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-convert {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.success {
+  color: #16a34a;
+  margin-bottom: 1rem;
+}
+
+.error {
+  color: #ef4444;
+  margin-bottom: 1rem;
+}

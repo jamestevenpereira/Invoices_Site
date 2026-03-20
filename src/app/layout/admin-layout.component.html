@@ -1,0 +1,12 @@
+<div class="admin-shell">
+  <nav class="sidebar">
+    <div class="brand">Facturação</div>
+    <a routerLink="/admin/quotes" routerLinkActive="active">Orçamentos</a>
+    <a routerLink="/admin/services" routerLinkActive="active">Serviços</a>
+    <a routerLink="/admin/settings" routerLinkActive="active">Definições</a>
+    <button class="logout" (click)="logout()">Sair</button>
+  </nav>
+  <main class="content">
+    <router-outlet />
+  </main>
+</div>

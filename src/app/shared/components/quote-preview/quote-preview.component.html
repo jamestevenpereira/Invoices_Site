@@ -1,0 +1,58 @@
+<div class="preview">
+  <div class="preview-header">
+    <div class="agency">{{ agencyName() }}</div>
+    <div class="doc-meta">
+      <div class="doc-number">{{ quote().number }}</div>
+      <div class="doc-date">{{ quote().created_at | date: 'dd/MM/yyyy' }}</div>
+    </div>
+  </div>
+  <div class="client-info">
+    <strong>{{ quote().client_name }}</strong><br />
+    {{ quote().client_email }}
+  </div>
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th>Serviço</th>
+        <th>Horas</th>
+        <th>€/hora</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of quote().items; track item.service_id) {
+        <tr>
+          <td>{{ item.name }}</td>
+          <td>{{ item.hours }}h</td>
+          <td>{{ quote().hourly_rate | currency: 'EUR' : 'symbol' : '1.2-2' : 'pt' }}</td>
+          <td>{{ item.subtotal | currency: 'EUR' : 'symbol' : '1.2-2' : 'pt' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <div class="totals">
+    <div class="total-row">
+      <span>Subtotal</span>
+      <span>{{ quote().total_amount | currency: 'EUR' : 'symbol' : '1.2-2' : 'pt' }}</span>
+    </div>
+    @if (vatMode() === 'exempt') {
+      <div class="vat-row exempt">Isento nos termos do art.º 53.º do CIVA</div>
+    } @else {
+      <div class="total-row">
+        <span>IVA 23%</span>
+        <span>{{
+          quote().total_amount * 0.23 | currency: 'EUR' : 'symbol' : '1.2-2' : 'pt'
+        }}</span>
+      </div>
+      <div class="total-row grand">
+        <span>Total</span>
+        <span>{{
+          quote().total_amount * 1.23 | currency: 'EUR' : 'symbol' : '1.2-2' : 'pt'
+        }}</span>
+      </div>
+    }
+  </div>
+  @if (quote().notes) {
+    <div class="notes"><strong>Notas:</strong> {{ quote().notes }}</div>
+  }
+</div>

@@ -36,6 +36,7 @@ Prioridades por ordem:
 ## Stack tecnológico
 
 ### Frontend — Angular v21
+
 ```
 use library /angular/angular
 ```
@@ -48,7 +49,119 @@ use library /angular/angular
 - Lazy loading em rotas não-críticas (qualquer página que não seja a home)
 - TypeScript com `strict: true` — nunca uses `any`
 
-**Estrutura de pastas (por projecto de cliente):**
+---
+
+### Estrutura de componentes — OBRIGATÓRIO
+
+**Todo o componente Angular deve ter exactamente 4 ficheiros separados:**
+
+```
+nome.component.ts       ← classe + decorator apenas
+nome.component.html     ← template externo
+nome.component.scss     ← estilos externos (sempre SCSS, nunca CSS)
+nome.component.spec.ts  ← testes Jest
+```
+
+**Regras:**
+- **NUNCA** usar `template: \`...\`` inline no decorator `@Component`
+- **NUNCA** usar `styles: [...]` inline no decorator `@Component`
+- **SEMPRE** usar `templateUrl` e `styleUrl` no decorator
+- Usar **SCSS** em todos os ficheiros de estilos, nunca CSS puro
+
+```typescript
+// ✅ CORRECTO
+@Component({
+  selector: 'app-hero',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './hero.component.html',
+  styleUrl: './hero.component.scss',
+})
+export class HeroComponent { }
+
+// ❌ PROIBIDO — nunca inline
+@Component({
+  selector: 'app-hero',
+  template: `<h1>Título</h1>`,
+  styles: [`h1 { color: red; }`],
+})
+export class HeroComponent { }
+```
+
+**Comando correcto para gerar componentes:**
+```bash
+ng generate component shared/components/nome --standalone
+# Gera automaticamente os 4 ficheiros — nunca usar --inline-template ou --inline-style
+```
+
+**Se encontrares componentes com template ou styles inline, migra-os imediatamente:**
+1. Extrai o template para `nome.component.html`
+2. Extrai os estilos para `nome.component.scss`
+3. Actualiza o decorator com `templateUrl` e `styleUrl`
+4. Cria o `nome.component.spec.ts` se não existir (scaffold mínimo com "should create")
+
+---
+
+### Sintaxe de templates — OBRIGATÓRIO
+
+**Usar SEMPRE a sintaxe de controlo nativa do Angular v17+. A sintaxe antiga com directivas estruturais está proibida.**
+
+```html
+<!-- ✅ CORRECTO — sintaxe nova -->
+
+@if (user()) {
+  <p>Olá, {{ user().name }}</p>
+} @else if (loading()) {
+  <p>A carregar...</p>
+} @else {
+  <p>Por favor faz login</p>
+}
+
+@for (item of items(); track item.id) {
+  <li>{{ item.name }}</li>
+} @empty {
+  <li>Sem resultados</li>
+}
+
+@switch (status()) {
+  @case ('active')   { <span class="active">Activo</span> }
+  @case ('inactive') { <span class="inactive">Inactivo</span> }
+  @default           { <span>Desconhecido</span> }
+}
+
+@defer (on viewport) {
+  <app-heavy-component />
+} @placeholder {
+  <div class="skeleton">A carregar...</div>
+} @loading {
+  <div>...</div>
+}
+```
+
+```html
+<!-- ❌ PROIBIDO — nunca usar -->
+<p *ngIf="user">...</p>
+<li *ngFor="let item of items">...</li>
+<ng-container [ngSwitch]="status">...</ng-container>
+<div *ngSwitchCase="'active'">...</div>
+```
+
+**Regras adicionais:**
+- `@for` requer **sempre** `track` — usar `track item.id` ou `track $index` se não houver id único
+- `@if` substitui completamente `*ngIf` e `<ng-template #else>`
+- `@defer` é preferível a `*ngIf` para conteúdo abaixo do fold — melhora LCP e TTI
+- **Nunca** importar `NgIf`, `NgFor`, `NgSwitch` ou `CommonModule` — desnecessário com standalone + sintaxe nova
+
+**Se encontrares templates com sintaxe antiga, migra-os imediatamente:**
+1. Substitui todos os `*ngIf` → `@if / @else`
+2. Substitui todos os `*ngFor` → `@for` (adiciona `track`)
+3. Substitui todos os `*ngSwitch` → `@switch / @case / @default`
+4. Remove imports de `NgIf`, `NgFor`, `NgSwitch`, `CommonModule` dos `.ts`
+
+---
+
+### Estrutura de pastas (por projecto de cliente)
+
 ```
 src/
   app/
@@ -82,50 +195,15 @@ src/
 - `NavbarComponent` — menu responsivo com variantes
 - `FooterComponent` — com morada, horário, links sociais
 - `TestimonialsComponent` — carrossel ou grid
-- `CtaSectionComponent` — call-to-action configurável via @Input
+- `CtaSectionComponent` — call-to-action configurável via `@Input`
 - `GalleryComponent` — galeria com lightbox
 - `BusinessHoursComponent` — horário de funcionamento
 - `MapEmbedComponent` — Google Maps embed
 
-**Sintaxe de templates — usar SEMPRE a sintaxe nova (Angular v17+):**
+---
 
-```html
-<!-- ✅ CORRECTO — sintaxe nova -->
-@if (user()) {
-  <p>Olá, {{ user().name }}</p>
-} @else {
-  <p>Por favor faz login</p>
-}
+### SEO — crítico para negócios locais
 
-@for (item of items(); track item.id) {
-  <li>{{ item.name }}</li>
-} @empty {
-  <li>Sem resultados</li>
-}
-
-@switch (status()) {
-  @case ('active')   { <span class="active">Activo</span> }
-  @case ('inactive') { <span class="inactive">Inactivo</span> }
-  @default           { <span>Desconhecido</span> }
-}
-
-@defer (on viewport) {
-  <app-heavy-component />
-} @placeholder {
-  <div>A carregar...</div>
-}
-```
-
-```html
-<!-- ❌ PROIBIDO — sintaxe antiga, nunca usar -->
-<p *ngIf="user">...</p>
-<li *ngFor="let item of items">...</li>
-<ng-container [ngSwitch]="status">...</ng-container>
-```
-
-Nota: `@for` requer sempre `track` — usar `track item.id` ou `track $index` se não houver id.
-
-**SEO — crítico para negócios locais:**
 ```typescript
 // Usar Angular Meta e Title services em cada página
 // Schema.org LocalBusiness markup
@@ -133,10 +211,14 @@ Nota: `@for` requer sempre `track` — usar `track item.id` ou `track $index` se
 // Sitemap automático
 ```
 
+---
+
 ### Testes — Jest + Angular Testing Library
+
 ```
 use library /angular/angular
 ```
+
 Usamos **Jest** (mais rápido que Karma, sem browser necessário, melhor DX).
 
 **O que testar obrigatoriamente:**
@@ -150,11 +232,13 @@ Usamos **Jest** (mais rápido que Karma, sem browser necessário, melhor DX).
 - Páginas estáticas sem interacção
 
 ```bash
-# Configurar Jest num projecto Angular
 npm install -D jest @types/jest jest-preset-angular @testing-library/angular
 ```
 
+---
+
 ### Node.js (Backend / API)
+
 - Para projectos simples: **Vercel Serverless Functions** (sem servidor separado)
 - Para projectos complexos: Express/Fastify com deploy independente
 - TypeScript com `strict: true`
@@ -173,9 +257,11 @@ GET  /api/health      → para monitorização UptimeRobot
 ## Serviços externos
 
 ### Supabase (só quando necessário)
+
 ```
 use library /supabase/supabase
 ```
+
 **Usar quando:** formulários com histórico, blog/CMS simples, agendamentos.
 **Não usar quando:** site puramente estático — não adicionar complexidade desnecessária.
 
@@ -183,17 +269,25 @@ use library /supabase/supabase
 - Nunca expões a service role key no cliente
 - Usa `supabase.auth.getUser()` no servidor para validar sessões
 
+---
+
 ### Clerk (Auth — só quando necessário)
+
 ```
 use library /clerk/javascript
 ```
+
 **Usar quando:** área de cliente, portal de agendamentos, conteúdo restrito.
 **Não usar quando:** site institucional simples — não criar fricção desnecessária.
 
+---
+
 ### Stripe (Pagamentos)
+
 ```
 use library /stripe/stripe-node
 ```
+
 **Métodos relevantes para Portugal:**
 - **MBway** — activar no Stripe Dashboard → Payment Methods (45%+ dos pagamentos online em PT)
 - **Multibanco** — voucher via ATM, muito usado por clientes menos tech-savvy
@@ -213,10 +307,14 @@ const event = stripe.webhooks.constructEvent(
 );
 ```
 
+---
+
 ### Resend (Email)
+
 ```
 use library /resend/resend
 ```
+
 **Fluxos típicos:**
 - Confirmação de formulário de contacto (para o visitante + para o negócio)
 - Confirmação de marcação
@@ -236,18 +334,27 @@ await resend.emails.send({
 - Verificar sempre o domínio do cliente antes do go-live
 - Usar subdomínio para envio: `mail.dominio-do-cliente.pt`
 
+---
+
 ### Sentry (Error Tracking)
+
 - Instalar em todos os projectos, mesmo nos simples
 - Nunca enviar PII ao Sentry — filtrar com `beforeSend`
 - Configurar alertas por email para erros novos em produção
 
+---
+
 ### Vercel (Deploy)
+
 - Um projecto Vercel por cliente
 - Preview deployments automáticos em cada PR — mostrar ao cliente antes de publicar
 - Variáveis de ambiente no dashboard da Vercel, nunca no código
 - Domínio do cliente configurado via Cloudflare
 
+---
+
 ### Cloudflare (DNS)
+
 - DNS de todos os clientes gerido aqui
 - Para Vercel: CNAME com proxy **desactivado** (nuvem cinzenta)
 - Activar protecção básica contra bots e DDoS
@@ -294,6 +401,7 @@ const localBusinessSchema = {
 - Fontes: `font-display: swap`; preconnect ou hospedar localmente
 - Scripts de terceiros: carregar com `defer` ou `async`
 - Angular: `OnPush` + lazy loading = diferença enorme em sites de conteúdo
+- Usar `@defer` para componentes abaixo do fold (melhora LCP e TTI directamente)
 - Alvo Lighthouse: 90+ em todas as categorias
 
 ---
@@ -308,6 +416,7 @@ chore: actualiza dependências
 content: actualiza textos da página de serviços
 style: ajusta cores ao branding do cliente
 seo: adiciona schema.org e meta tags
+refactor: migra componentes para estrutura multi-ficheiro
 ```
 
 - Branch `main` → produção
@@ -323,7 +432,7 @@ seo: adiciona schema.org e meta tags
 - Todas as chaves em variáveis de ambiente — nunca no código
 - `.env` sempre no `.gitignore` — verificar no primeiro commit
 - Rate limiting nos endpoints de contacto (evitar spam)
-- Validar e sanitizar todos os inputs de formulários
+- Validar e sanitizar todos os inputs de formulários (Zod no servidor)
 - HTTPS garantido pela Vercel + Cloudflare
 - Nunca expões stack traces ao utilizador final
 
@@ -344,7 +453,7 @@ npm install -D jest @types/jest jest-preset-angular @testing-library/angular
 # 4. Criar projecto no Vercel e ligar ao repo
 # 5. Configurar DNS no Cloudflare
 # 6. Verificar domínio no Resend
-# 7. Criar .env.example com todas as variáveis
+# 7. Criar .env.example com todas as variáveis necessárias
 
 # Supabase (apenas se necessário)
 npm install @supabase/supabase-js
@@ -366,13 +475,14 @@ npm install @supabase/supabase-js
 - [ ] Teste em mobile (iOS Safari + Android Chrome)
 - [ ] Teste nos browsers principais (Chrome, Safari, Firefox)
 - [ ] Schema.org validado em schema.org/SchemaApp ou Google Rich Results Test
+- [ ] Todos os componentes com estrutura multi-ficheiro (sem inline templates/styles)
 
 ---
 
 ## Comandos úteis
 
 ```bash
-# Angular
+# Angular — gerar componentes (sempre 4 ficheiros)
 ng generate component shared/components/nome --standalone
 ng generate service core/services/nome
 

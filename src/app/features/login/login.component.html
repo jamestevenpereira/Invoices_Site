@@ -1,0 +1,15 @@
+<div class="login-wrap">
+  <div class="login-card">
+    <h1>Acesso Restrito</h1>
+    <form (ngSubmit)="submit()">
+      <label>Palavra-passe</label>
+      <input type="password" [ngModel]="password()" (ngModelChange)="password.set($event)" name="password" required autofocus />
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+      <button type="submit" [disabled]="loading()">
+        {{ loading() ? 'A entrar...' : 'Entrar' }}
+      </button>
+    </form>
+  </div>
+</div>

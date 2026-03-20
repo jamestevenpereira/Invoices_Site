@@ -1,0 +1,71 @@
+h2 {
+  margin-bottom: 1.5rem;
+}
+
+section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-size: .9rem;
+  color: #64748b;
+  margin-bottom: 1rem;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+input[type=range] {
+  flex: 1;
+}
+
+.rate-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  min-width: 100px;
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .5rem;
+  cursor: pointer;
+}
+
+input[type=email] {
+  width: 100%;
+  padding: .625rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+button {
+  background: #3b82f6;
+  color: white;
+  padding: .75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: .6;
+  }
+}
+
+.success {
+  color: #16a34a;
+  margin-top: .75rem;
+}
+
+.error {
+  color: #ef4444;
+  margin-top: .75rem;
+}

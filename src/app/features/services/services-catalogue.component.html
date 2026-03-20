@@ -1,0 +1,48 @@
+<div class="page-header">
+  <h2>Catálogo de Serviços</h2>
+  <button (click)="showForm.set(true)" class="btn-primary">+ Novo Serviço</button>
+</div>
+
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+}
+
+@if (showForm()) {
+  <form class="inline-form" (ngSubmit)="save()">
+    <input [(ngModel)]="form.name" name="name" placeholder="Nome do serviço" required />
+    <input [(ngModel)]="form.category" name="category" placeholder="Categoria" list="cats" required />
+    <datalist id="cats">
+      @for (cat of categories(); track cat) { <option [value]="cat"></option> }
+    </datalist>
+    <input type="number" [(ngModel)]="form.default_hours" name="default_hours"
+      placeholder="Horas" min="0" step="0.5" required />
+    <button type="submit">{{ editingId() ? 'Actualizar' : 'Criar' }}</button>
+    <button type="button" (click)="cancelForm()">Cancelar</button>
+  </form>
+}
+
+@for (category of categories(); track category) {
+  <div class="category-block">
+    <h3>{{ category }}</h3>
+    <table>
+      <thead>
+        <tr><th>Serviço</th><th>Horas padrão</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        @for (s of servicesByCategory()[category]; track s.id) {
+          <tr [class.archived]="!s.active">
+            <td>{{ s.name }}</td>
+            <td>{{ s.default_hours }}h</td>
+            <td>{{ s.active ? 'Activo' : 'Arquivado' }}</td>
+            <td class="actions">
+              <button (click)="edit(s)">Editar</button>
+              @if (s.active) {
+                <button (click)="archive(s.id)" class="danger">Arquivar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
