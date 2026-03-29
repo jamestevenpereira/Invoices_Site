@@ -7,6 +7,8 @@ const schema = z.object({
   hourly_rate: z.number().min(1).max(500).optional(),
   owner_email: z.string().email().optional(),
   vat_mode: z.enum(['exempt', 'standard']).optional(),
+  agency_name: z.string().max(200).optional(),
+  sender_email: z.string().email().optional(),
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
