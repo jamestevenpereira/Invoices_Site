@@ -1,158 +1,264 @@
+/* ─── Base ─────────────────────────────────────────────────────────── */
 .preview {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: .9rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
   color: #1e293b;
   line-height: 1.6;
+  border-top: 4px solid #4f46e5;
+  padding-top: 2.25rem;
 }
 
-/* ─── Header ──────────────────────────────────────────────────────── */
+/* ─── Header ────────────────────────────────────────────────────────── */
 .preview-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding-bottom: 1.75rem;
-  margin-bottom: 1.75rem;
-  border-bottom: 2px solid #4f46e5;
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .agency {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1e293b;
-  letter-spacing: -.01em;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -.03em;
+  line-height: 1.1;
 }
 
 .agency-sub {
   font-size: .75rem;
   color: #94a3b8;
-  margin-top: .125rem;
+  margin-top: .375rem;
+  font-weight: 400;
+  letter-spacing: .01em;
 }
 
-.doc-meta { text-align: right; }
+.header-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .375rem;
+}
 
-.doc-type {
-  font-size: .65rem;
+.doc-badge {
+  display: inline-block;
+  background: #4f46e5;
+  color: #fff;
+  font-size: .6rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: .08em;
-  color: #4f46e5;
-  margin-bottom: .25rem;
+  letter-spacing: .12em;
+  padding: .275rem .7rem;
+  border-radius: 999px;
 }
 
 .doc-number {
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #0f172a;
+  letter-spacing: -.01em;
 }
 
 .doc-date {
-  font-size: .8rem;
+  font-size: .8125rem;
   color: #94a3b8;
-  margin-top: .125rem;
 }
 
-/* ─── Client info ─────────────────────────────────────────────────── */
+/* ─── Client block ───────────────────────────────────────────────────── */
 .client-block {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  padding: 1rem 1.25rem;
   margin-bottom: 2rem;
+  background: #f8fafc;
+  border-left: 3px solid #4f46e5;
+  border-radius: 0 6px 6px 0;
 }
 
 .client-label {
-  font-size: .65rem;
+  font-size: .6rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
   color: #94a3b8;
-  margin-bottom: .5rem;
+  margin-bottom: .25rem;
 }
 
 .client-name {
-  font-weight: 600;
   font-size: .9375rem;
-  color: #1e293b;
+  font-weight: 600;
+  color: #0f172a;
 }
 
 .client-email {
   font-size: .8125rem;
   color: #64748b;
-  margin-top: .125rem;
 }
 
-/* ─── Items table ─────────────────────────────────────────────────── */
+/* ─── Items table ────────────────────────────────────────────────────── */
 .items-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 1.5rem;
 
   thead tr {
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
     border-bottom: 1px solid #e2e8f0;
   }
 
   th {
-    padding: .5rem .625rem;
-    text-align: left;
-    font-size: .65rem;
+    padding: .6rem .75rem;
+    font-size: .6rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: .07em;
+    letter-spacing: .1em;
     color: #94a3b8;
+    text-align: left;
 
-    &:last-child { text-align: right; }
+    &.col-hours,
+    &.col-rate,
+    &.col-sub { text-align: right; }
+  }
+
+  tbody tr {
+    transition: background .1s;
+
+    &:hover { background: #fafbff; }
+    &:last-child td { border-bottom: none; }
   }
 
   td {
-    padding: .75rem .625rem;
+    padding: .8rem .75rem;
     border-bottom: 1px solid #f1f5f9;
     font-size: .875rem;
-    color: #1e293b;
-
-    &:last-child { text-align: right; font-weight: 500; }
+    color: #334155;
+    vertical-align: middle;
   }
 
-  tbody tr:last-child td { border-bottom: none; }
+  .td-service {
+    color: #0f172a;
+    font-weight: 450;
+  }
+
+  .td-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .td-muted { color: #94a3b8; font-size: .8125rem; }
+
+  .td-subtotal {
+    text-align: right;
+    font-weight: 600;
+    color: #0f172a;
+    font-variant-numeric: tabular-nums;
+  }
 }
 
-.rate-col { color: #94a3b8; font-size: .8rem; }
+/* ─── Totals ─────────────────────────────────────────────────────────── */
+.totals-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+}
 
-/* ─── Totals ──────────────────────────────────────────────────────── */
 .totals {
-  margin-left: auto;
-  width: 260px;
-  border-top: 1px solid #e2e8f0;
-  padding-top: 1rem;
+  width: 288px;
+  border-top: 2px solid #e2e8f0;
+  padding-top: .875rem;
+  display: flex;
+  flex-direction: column;
+  gap: .125rem;
 }
 
 .total-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: .3rem 0;
+  padding: .25rem 0;
   font-size: .875rem;
-  color: #64748b;
+
+  .t-label { color: #64748b; }
+  .t-value { font-weight: 500; color: #1e293b; font-variant-numeric: tabular-nums; }
 
   &.grand {
-    font-size: 1.0625rem;
-    font-weight: 700;
-    color: #1e293b;
-    border-top: 1px solid #e2e8f0;
-    padding-top: .625rem;
-    margin-top: .375rem;
+    margin-top: .625rem;
+    padding: .875rem 1rem;
+    background: #4f46e5;
+    border-radius: 6px;
+
+    .t-label {
+      font-size: .875rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, .85);
+      letter-spacing: .02em;
+    }
+
+    .t-value {
+      font-size: 1.1875rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -.01em;
+    }
   }
 }
 
-.vat-row {
+.vat-note {
   font-size: .75rem;
   color: #94a3b8;
-  padding: .75rem 0 0;
   font-style: italic;
+  text-align: right;
+  padding-top: .375rem;
 }
 
-/* ─── Notes ───────────────────────────────────────────────────────── */
+/* ─── Notes ──────────────────────────────────────────────────────────── */
 .notes-block {
-  margin-top: 2rem;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 3px solid #f59e0b;
+  border-radius: 0 6px 6px 0;
+  padding: .875rem 1.125rem;
+  margin-bottom: 2rem;
+}
+
+.notes-label {
+  font-size: .6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: #92400e;
+  margin-bottom: .3rem;
+}
+
+.notes-text {
+  font-size: .8125rem;
+  color: #78350f;
+  line-height: 1.65;
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────── */
+.preview-footer {
+  margin-top: 2.5rem;
   padding-top: 1.25rem;
   border-top: 1px solid #f1f5f9;
-  font-size: .8125rem;
-  color: #64748b;
+  font-size: .75rem;
+  color: #94a3b8;
+  text-align: center;
+  letter-spacing: .02em;
+}
 
-  strong { color: #1e293b; }
+/* ─── Print ──────────────────────────────────────────────────────────── */
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+  .preview {
+    font-size: 12px;
+    padding-top: 1.5rem;
+  }
+
+  .items-table tbody tr:hover { background: transparent; }
 }

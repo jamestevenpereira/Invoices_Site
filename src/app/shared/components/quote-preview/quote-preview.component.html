@@ -1,65 +1,80 @@
 <div class="preview">
 
-  <div class="preview-header">
-    <div>
+  <!-- ─── Header ─────────────────────────────────────────────────── -->
+  <header class="preview-header">
+    <div class="header-left">
       <div class="agency">{{ agencyName() }}</div>
-      <div class="agency-sub">Proposta comercial</div>
+      <div class="agency-sub">Desenvolvimento Web Profissional</div>
     </div>
-    <div class="doc-meta">
-      <div class="doc-type">{{ quote().status === 'invoice' ? 'Fatura' : 'Orçamento' }}</div>
+    <div class="header-right">
+      <span class="doc-badge">{{ quote().status === 'invoice' ? 'Fatura' : 'Orçamento' }}</span>
       <div class="doc-number">{{ quote().number }}</div>
-      <div class="doc-date">{{ quote().created_at | date:'dd MMM yyyy' }}</div>
+      <div class="doc-date">{{ quote().created_at | date:'dd/MM/yyyy' }}</div>
     </div>
-  </div>
+  </header>
 
+  <!-- ─── Client ─────────────────────────────────────────────────── -->
   <div class="client-block">
-    <div class="client-label">Destinatário</div>
+    <div class="client-label">Faturar a</div>
     <div class="client-name">{{ quote().client_name }}</div>
     <div class="client-email">{{ quote().client_email }}</div>
   </div>
 
+  <!-- ─── Items table ─────────────────────────────────────────────── -->
   <table class="items-table">
     <thead>
       <tr>
-        <th>Serviço</th>
-        <th>Horas</th>
-        <th>€/hora</th>
-        <th>Subtotal</th>
+        <th class="col-service">Serviço</th>
+        <th class="col-hours">Horas</th>
+        <th class="col-rate">€ / hora</th>
+        <th class="col-sub">Subtotal</th>
       </tr>
     </thead>
     <tbody>
       @for (item of quote().items; track item.service_id) {
         <tr>
-          <td>{{ item.name }}</td>
-          <td>{{ item.hours }}h</td>
-          <td class="rate-col">{{ quote().hourly_rate | currency:'EUR':'symbol':'1.2-2' }}</td>
-          <td>{{ item.subtotal | currency:'EUR':'symbol':'1.2-2' }}</td>
+          <td class="td-service">{{ item.name }}</td>
+          <td class="td-num">{{ item.hours }}h</td>
+          <td class="td-num td-muted">{{ quote().hourly_rate | currency:'EUR':'symbol':'1.2-2' }}</td>
+          <td class="td-subtotal">{{ item.subtotal | currency:'EUR':'symbol':'1.2-2' }}</td>
         </tr>
       }
     </tbody>
   </table>
 
-  <div class="totals">
-    <div class="total-row">
-      <span>Subtotal</span>
-      <span>{{ quote().total_amount | currency:'EUR':'symbol':'1.2-2' }}</span>
-    </div>
-    @if (vatMode() === 'exempt') {
-      <div class="vat-row">Isento nos termos do art.º 53.º do CIVA</div>
-    } @else {
+  <!-- ─── Totals ──────────────────────────────────────────────────── -->
+  <div class="totals-wrapper">
+    <div class="totals">
       <div class="total-row">
-        <span>IVA 23%</span>
-        <span>{{ quote().total_amount * 0.23 | currency:'EUR':'symbol':'1.2-2' }}</span>
+        <span class="t-label">Subtotal</span>
+        <span class="t-value">{{ quote().total_amount | currency:'EUR':'symbol':'1.2-2' }}</span>
       </div>
-      <div class="total-row grand">
-        <span>Total</span>
-        <span>{{ quote().total_amount * 1.23 | currency:'EUR':'symbol':'1.2-2' }}</span>
-      </div>
-    }
+      @if (vatMode() === 'exempt') {
+        <div class="vat-note">Isento nos termos do art.º 53.º do CIVA</div>
+      } @else {
+        <div class="total-row">
+          <span class="t-label">IVA (23%)</span>
+          <span class="t-value">{{ quote().total_amount * 0.23 | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="total-row grand">
+          <span class="t-label">Total</span>
+          <span class="t-value">{{ quote().total_amount * 1.23 | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+      }
+    </div>
   </div>
 
+  <!-- ─── Notes ───────────────────────────────────────────────────── -->
   @if (quote().notes) {
-    <div class="notes-block"><strong>Notas:</strong> {{ quote().notes }}</div>
+    <div class="notes-block">
+      <div class="notes-label">Notas</div>
+      <div class="notes-text">{{ quote().notes }}</div>
+    </div>
   }
+
+  <!-- ─── Footer ──────────────────────────────────────────────────── -->
+  <footer class="preview-footer">
+    Obrigado pela preferência &mdash; {{ agencyName() }}
+  </footer>
 
 </div>
