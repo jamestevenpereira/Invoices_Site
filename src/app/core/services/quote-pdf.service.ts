@@ -59,22 +59,34 @@ export class QuotePdfService {
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
       const ratio = pageW / canvas.width;
-      const sliceH = Math.floor(pageH / ratio); // canvas pixels per A4 page
+
+      // Page 1 uses the full height; pages 2+ reserve 15mm at the top for a continuation header
+      const CONT_MARGIN = 15; // mm
+      const p1SliceH = Math.floor(pageH / ratio);
+      const pNSliceH = Math.floor((pageH - CONT_MARGIN) / ratio);
 
       let srcY = 0;
+      let pageIndex = 0;
+
       while (srcY < canvas.height) {
-        if (srcY > 0) pdf.addPage();
+        if (pageIndex > 0) {
+          pdf.addPage();
+          // Continuation header: doc number centred + thin rule
+          pdf.setFontSize(8);
+          pdf.setTextColor(148, 163, 184);
+          pdf.text(quote.number, pageW / 2, CONT_MARGIN - 5, { align: 'center' });
+          pdf.setDrawColor(226, 232, 240);
+          pdf.line(15, CONT_MARGIN - 3, pageW - 15, CONT_MARGIN - 3);
+        }
 
-        const remaining = canvas.height - srcY;
+        const sliceH = pageIndex === 0 ? p1SliceH : pNSliceH;
         const rawEnd = srcY + sliceH;
-
-        // Find a white-row break near the page boundary to avoid cutting content
         const sliceEnd =
           rawEnd >= canvas.height ? canvas.height : this.findSafeBreakY(canvas, rawEnd);
 
         const sliceCanvas = document.createElement('canvas');
         sliceCanvas.width = canvas.width;
-        sliceCanvas.height = Math.min(sliceEnd - srcY, remaining);
+        sliceCanvas.height = Math.min(sliceEnd - srcY, canvas.height - srcY);
         sliceCanvas
           .getContext('2d')!
           .drawImage(
@@ -88,15 +100,19 @@ export class QuotePdfService {
             sliceCanvas.width,
             sliceCanvas.height,
           );
+
+        const yPos = pageIndex === 0 ? 0 : CONT_MARGIN;
         pdf.addImage(
           sliceCanvas.toDataURL('image/png'),
           'PNG',
           0,
-          0,
+          yPos,
           pageW,
           sliceCanvas.height * ratio,
         );
+
         srcY = sliceEnd;
+        pageIndex++;
       }
 
       pdf.save(`${quote.number}.pdf`);
