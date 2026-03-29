@@ -34,8 +34,8 @@ CREATE TABLE settings (
   hourly_rate  numeric NOT NULL DEFAULT 15,
   owner_email  text NOT NULL DEFAULT '',
   vat_mode     text NOT NULL DEFAULT 'exempt' CHECK (vat_mode IN ('exempt', 'standard')),
-  agency_name  text NOT NULL DEFAULT 'A Minha Agência Web',
-  sender_email text NOT NULL DEFAULT 'noreply@agencia.pt'
+  agency_name  text NOT NULL DEFAULT 'James Steven Dev',
+  sender_email text NOT NULL DEFAULT 'jamestevepereira@gmail.com'
 );
 
 -- updated_at trigger for quotes
