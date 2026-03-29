@@ -30,4 +30,15 @@ export class QuotesListComponent implements OnInit {
   downloadPdf(q: Quote) {
     this.pdfService.generatePdf(q);
   }
+
+  async deleteQuote(q: Quote) {
+    const label = q.status === 'invoice' ? 'fatura' : 'orçamento';
+    if (!confirm(`Eliminar ${label} ${q.number}? Esta acção não pode ser desfeita.`)) return;
+    try {
+      await this.quoteService.deleteQuote(q.id);
+      this.quotes.update((list) => list.filter((x) => x.id !== q.id));
+    } catch {
+      this.error.set('Erro ao eliminar documento');
+    }
+  }
 }

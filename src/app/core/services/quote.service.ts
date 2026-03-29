@@ -24,20 +24,33 @@ export class QuoteService {
   }
 
   async createQuote(payload: CreateQuotePayload): Promise<Quote> {
-    const result = await apiRequest<Quote>('/api/quotes', { method: 'POST', body: JSON.stringify(payload) });
+    const result = await apiRequest<Quote>('/api/quotes', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
     if (!result) throw new Error('Resposta inválida do servidor');
     return result;
   }
 
   async updateQuote(id: string, payload: UpdateQuotePayload): Promise<Quote> {
-    const result = await apiRequest<Quote>(`/api/quotes/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+    const result = await apiRequest<Quote>(`/api/quotes/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
     if (!result) throw new Error('Resposta inválida do servidor');
     return result;
   }
 
   async convertToInvoice(id: string): Promise<Quote> {
-    const result = await apiRequest<Quote>(`/api/quotes/${id}`, { method: 'PUT', body: JSON.stringify({ status: 'invoice' }) });
+    const result = await apiRequest<Quote>(`/api/quotes/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: 'invoice' }),
+    });
     if (!result) throw new Error('Resposta inválida do servidor');
     return result;
+  }
+
+  async deleteQuote(id: string): Promise<void> {
+    await apiRequest<void>(`/api/quotes/${id}`, { method: 'DELETE' });
   }
 }

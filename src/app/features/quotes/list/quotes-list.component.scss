@@ -111,7 +111,7 @@
 .date-cell   { color: var(--c-text-2); font-size: .8125rem; white-space: nowrap; }
 .right       { text-align: right; }
 .actions-cell {
-  width: 80px;
+  width: 110px;
   text-align: right;
   white-space: nowrap;
 }
@@ -164,4 +164,10 @@
   }
 
   & + & { margin-left: .375rem; }
+
+  &.action-btn-danger:hover {
+    background: #fef2f2;
+    border-color: rgba(239,68,68,.25);
+    color: #dc2626;
+  }
 }
