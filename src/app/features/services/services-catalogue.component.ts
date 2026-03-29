@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ServiceCatalogueService } from '../../core/services/service-catalogue.service';
 import type { Service } from '../../core/models';
@@ -15,6 +22,7 @@ export class ServicesCatalogueComponent implements OnInit {
   private svc = inject(ServiceCatalogueService);
 
   services = signal<Service[]>([]);
+  totalServices = computed(() => this.services().length);
   showForm = signal(false);
   editingId = signal<string | null>(null);
   categories = signal<string[]>([]);

@@ -1,51 +1,175 @@
+.detail-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ─── Header ──────────────────────────────────────────────────────── */
 .detail-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1.5rem;
-}
-
-.sub {
-  font-size: 0.85rem;
-  color: #64748b;
-}
-
-.actions {
-  display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
-.preview-wrap {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  max-width: 700px;
+.header-left { display: flex; flex-direction: column; gap: .375rem; }
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  font-size: .8125rem;
+  color: var(--c-text-muted);
+  text-decoration: none;
+  margin-bottom: .125rem;
+  transition: color .12s;
+
+  &:hover { color: var(--c-text); }
+}
+
+.doc-title-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: .2rem .65rem;
+  border-radius: 999px;
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.badge-quote   { background: #fffbeb; color: #b45309; }
+.badge-invoice { background: var(--c-success-bg); color: #065f46; }
+
+.sent-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .75rem;
+  color: var(--c-success);
+  background: var(--c-success-bg);
+  padding: .2rem .6rem;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.sub {
+  font-size: .8rem;
+  color: var(--c-text-muted);
+}
+
+.header-actions {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ─── Alerts ──────────────────────────────────────────────────────── */
+.alert-success {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .625rem .875rem;
+  background: var(--c-success-bg);
+  border: 1px solid rgba(16,185,129,.2);
+  border-radius: var(--radius-sm);
+  color: #065f46;
+  font-size: .875rem;
+}
+
+.alert-error {
+  padding: .625rem .875rem;
+  background: var(--c-danger-bg);
+  border: 1px solid rgba(239,68,68,.2);
+  border-radius: var(--radius-sm);
+  color: var(--c-danger);
+  font-size: .875rem;
+}
+
+/* ─── Paper preview ───────────────────────────────────────────────── */
+.paper-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0 3rem;
+}
+
+.paper {
+  background: #fff;
+  width: 100%;
+  max-width: 680px;
+  border-radius: var(--radius);
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.08),
+    0 8px 24px rgba(0,0,0,.08),
+    0 32px 64px rgba(0,0,0,.05);
+  padding: 3rem 3.5rem;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 4rem;
+  color: var(--c-text-muted);
+  font-size: .9rem;
+}
+
+/* ─── Buttons ─────────────────────────────────────────────────────── */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  padding: .45rem .875rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--c-text-2);
+  font-size: .875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .12s, color .12s;
+
+  &:hover { background: var(--c-bg); color: var(--c-text); }
 }
 
 .btn-secondary {
-  background: white;
-  border: 1px solid #e2e8f0;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  padding: .45rem .875rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-size: .875rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background .12s;
+
+  &:not(:disabled):hover { background: var(--c-bg); }
+  &:disabled { opacity: .6; cursor: not-allowed; }
 }
 
-.btn-convert {
-  background: #16a34a;
-  color: white;
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  padding: .45rem .875rem;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
+  background: var(--c-primary);
+  color: #fff;
+  font-size: .875rem;
+  font-weight: 500;
   cursor: pointer;
-}
+  transition: background .12s;
 
-.success {
-  color: #16a34a;
-  margin-bottom: 1rem;
-}
-
-.error {
-  color: #ef4444;
-  margin-bottom: 1rem;
+  &:not(:disabled):hover { background: var(--c-primary-hover); }
+  &:disabled { opacity: .6; cursor: not-allowed; }
 }

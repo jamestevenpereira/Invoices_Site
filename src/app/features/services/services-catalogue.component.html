@@ -1,48 +1,81 @@
 <div class="page-header">
-  <h2>Catálogo de Serviços</h2>
-  <button (click)="showForm.set(true)" class="btn-primary">+ Novo Serviço</button>
+  <div class="header-text">
+    <h1 class="page-title">Catálogo de Serviços</h1>
+    <p class="page-subtitle">{{ categories().length }} categorias · {{ totalServices() }} serviços</p>
+  </div>
+  @if (!showForm()) {
+    <button (click)="showForm.set(true)" class="btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Novo Serviço
+    </button>
+  }
 </div>
 
 @if (error()) {
-  <p class="error">{{ error() }}</p>
+  <div class="alert-error">{{ error() }}</div>
 }
 
 @if (showForm()) {
-  <form class="inline-form" (ngSubmit)="save()">
-    <input [(ngModel)]="form.name" name="name" placeholder="Nome do serviço" required />
-    <input [(ngModel)]="form.category" name="category" placeholder="Categoria" list="cats" required />
-    <datalist id="cats">
-      @for (cat of categories(); track cat) { <option [value]="cat"></option> }
-    </datalist>
-    <input type="number" [(ngModel)]="form.default_hours" name="default_hours"
-      placeholder="Horas" min="0" step="0.5" required />
-    <button type="submit">{{ editingId() ? 'Actualizar' : 'Criar' }}</button>
-    <button type="button" (click)="cancelForm()">Cancelar</button>
-  </form>
-}
-
-@for (category of categories(); track category) {
-  <div class="category-block">
-    <h3>{{ category }}</h3>
-    <table>
-      <thead>
-        <tr><th>Serviço</th><th>Horas padrão</th><th>Estado</th><th></th></tr>
-      </thead>
-      <tbody>
-        @for (s of servicesByCategory()[category]; track s.id) {
-          <tr [class.archived]="!s.active">
-            <td>{{ s.name }}</td>
-            <td>{{ s.default_hours }}h</td>
-            <td>{{ s.active ? 'Activo' : 'Arquivado' }}</td>
-            <td class="actions">
-              <button (click)="edit(s)">Editar</button>
-              @if (s.active) {
-                <button (click)="archive(s.id)" class="danger">Arquivar</button>
-              }
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+  <div class="form-panel">
+    <div class="form-panel-header">
+      <span class="form-panel-title">{{ editingId() ? 'Editar serviço' : 'Novo serviço' }}</span>
+      <button class="close-btn" (click)="cancelForm()" title="Fechar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form class="form-body" (ngSubmit)="save()">
+      <div class="form-grid">
+        <div class="field">
+          <label class="field-label">Nome do serviço</label>
+          <input class="field-input" [(ngModel)]="form.name" name="name" placeholder="ex. Página inicial" required />
+        </div>
+        <div class="field">
+          <label class="field-label">Categoria</label>
+          <input class="field-input" [(ngModel)]="form.category" name="category" placeholder="ex. Design" list="cats" required />
+          <datalist id="cats">
+            @for (cat of categories(); track cat) { <option [value]="cat"></option> }
+          </datalist>
+        </div>
+        <div class="field field-sm">
+          <label class="field-label">Horas padrão</label>
+          <input class="field-input" type="number" [(ngModel)]="form.default_hours" name="default_hours" placeholder="0" min="0" step="0.5" required />
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-ghost" (click)="cancelForm()">Cancelar</button>
+        <button type="submit" class="btn-primary">{{ editingId() ? 'Actualizar' : 'Criar serviço' }}</button>
+      </div>
+    </form>
   </div>
 }
+
+<div class="catalogue-grid">
+  @for (category of categories(); track category) {
+    <div class="cat-card">
+      <div class="cat-card-header">
+        <span class="cat-name">{{ category }}</span>
+        <span class="cat-count">{{ servicesByCategory()[category].length }}</span>
+      </div>
+      <div class="service-list">
+        @for (s of servicesByCategory()[category]; track s.id) {
+          <div class="service-row" [class.archived]="!s.active">
+            <div class="service-info">
+              <span class="service-name">{{ s.name }}</span>
+              <span class="service-hours">{{ s.default_hours }}h</span>
+            </div>
+            <div class="service-actions">
+              <button class="row-btn" (click)="edit(s)" title="Editar">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              @if (s.active) {
+                <button class="row-btn danger" (click)="archive(s.id)" title="Arquivar">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -1,80 +1,158 @@
 .preview {
-  font-family: system-ui, sans-serif;
-  font-size: 0.9rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: .9rem;
   color: #1e293b;
+  line-height: 1.6;
 }
 
+/* ─── Header ──────────────────────────────────────────────────────── */
 .preview-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  align-items: flex-start;
+  padding-bottom: 1.75rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 2px solid #4f46e5;
 }
 
 .agency {
-  font-weight: 700;
   font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -.01em;
+}
+
+.agency-sub {
+  font-size: .75rem;
+  color: #94a3b8;
+  margin-top: .125rem;
+}
+
+.doc-meta { text-align: right; }
+
+.doc-type {
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #4f46e5;
+  margin-bottom: .25rem;
 }
 
 .doc-number {
-  font-weight: 600;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1e293b;
 }
 
 .doc-date {
+  font-size: .8rem;
+  color: #94a3b8;
+  margin-top: .125rem;
+}
+
+/* ─── Client info ─────────────────────────────────────────────────── */
+.client-block {
+  margin-bottom: 2rem;
+}
+
+.client-label {
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #94a3b8;
+  margin-bottom: .5rem;
+}
+
+.client-name {
+  font-weight: 600;
+  font-size: .9375rem;
+  color: #1e293b;
+}
+
+.client-email {
+  font-size: .8125rem;
   color: #64748b;
-  font-size: 0.85rem;
+  margin-top: .125rem;
 }
 
-.client-info {
-  margin-bottom: 1.5rem;
-}
-
+/* ─── Items table ─────────────────────────────────────────────────── */
 .items-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+
+  thead tr {
+    border-bottom: 1px solid #e2e8f0;
+  }
 
   th {
-    background: #f1f5f9;
-    padding: 0.5rem;
+    padding: .5rem .625rem;
     text-align: left;
-    font-size: 0.8rem;
+    font-size: .65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: #94a3b8;
+
+    &:last-child { text-align: right; }
   }
 
   td {
-    padding: 0.5rem;
+    padding: .75rem .625rem;
     border-bottom: 1px solid #f1f5f9;
+    font-size: .875rem;
+    color: #1e293b;
+
+    &:last-child { text-align: right; font-weight: 500; }
   }
+
+  tbody tr:last-child td { border-bottom: none; }
 }
 
+.rate-col { color: #94a3b8; font-size: .8rem; }
+
+/* ─── Totals ──────────────────────────────────────────────────────── */
 .totals {
-  text-align: right;
-  padding-top: 0.75rem;
-  border-top: 2px solid #e2e8f0;
+  margin-left: auto;
+  width: 260px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
 }
 
 .total-row {
   display: flex;
-  justify-content: flex-end;
-  gap: 2rem;
-  padding: 0.25rem 0;
-}
-
-.grand {
-  font-weight: 700;
-  font-size: 1.1rem;
-  border-top: 1px solid #1e293b;
-  padding-top: 0.5rem;
-}
-
-.vat-row.exempt {
-  font-size: 0.75rem;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: .3rem 0;
+  font-size: .875rem;
   color: #64748b;
-  margin-top: 0.5rem;
+
+  &.grand {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: #1e293b;
+    border-top: 1px solid #e2e8f0;
+    padding-top: .625rem;
+    margin-top: .375rem;
+  }
 }
 
-.notes {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  background: #f8fafc;
-  border-radius: 6px;
+.vat-row {
+  font-size: .75rem;
+  color: #94a3b8;
+  padding: .75rem 0 0;
+  font-style: italic;
+}
+
+/* ─── Notes ───────────────────────────────────────────────────────── */
+.notes-block {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #f1f5f9;
+  font-size: .8125rem;
+  color: #64748b;
+
+  strong { color: #1e293b; }
 }

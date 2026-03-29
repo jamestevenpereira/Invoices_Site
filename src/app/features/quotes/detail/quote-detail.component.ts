@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { QuoteService } from '../../../core/services/quote.service';
 import { QuotePdfService } from '../../../core/services/quote-pdf.service';
 import { SettingsService } from '../../../core/services/settings.service';
+import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { QuotePreviewComponent } from '../../../shared/components/quote-preview/quote-preview.component';
 import { apiRequest } from '../../../core/utils/api-client';
 import type { Quote, Settings } from '../../../core/models';
@@ -10,7 +12,7 @@ import type { Quote, Settings } from '../../../core/models';
 @Component({
   selector: 'app-quote-detail',
   standalone: true,
-  imports: [QuotePreviewComponent],
+  imports: [QuotePreviewComponent, DatePipe, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './quote-detail.component.html',
   styleUrl: './quote-detail.component.scss',

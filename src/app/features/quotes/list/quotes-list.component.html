@@ -1,45 +1,67 @@
 <div class="page-header">
-  <h2>Orçamentos &amp; Faturas</h2>
-  <a routerLink="/admin/quotes/new" class="btn-primary">+ Novo Orçamento</a>
+  <div class="header-text">
+    <h1 class="page-title">Orçamentos &amp; Faturas</h1>
+    <p class="page-subtitle">Gestão de documentos financeiros</p>
+  </div>
+  <a routerLink="/admin/quotes/new" class="btn-primary">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Novo Orçamento
+  </a>
 </div>
 
 @if (error()) {
-  <p class="error">{{ error() }}</p>
+  <div class="alert-error">{{ error() }}</div>
 }
 
 @if (quotes().length === 0) {
-  <p class="empty">Ainda não há orçamentos. Cria o primeiro!</p>
+  <div class="empty-state">
+    <div class="empty-icon">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    </div>
+    <p class="empty-title">Ainda não há documentos</p>
+    <p class="empty-sub">Cria o primeiro orçamento para começar a facturar.</p>
+    <a routerLink="/admin/quotes/new" class="btn-primary" style="margin-top:1rem">Criar Orçamento</a>
+  </div>
 } @else {
-  <table class="quotes-table">
-    <thead>
-      <tr>
-        <th>Número</th>
-        <th>Cliente</th>
-        <th>Estado</th>
-        <th>Total</th>
-        <th>Data</th>
-        <th>Enviado</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (q of quotes(); track q.id) {
+  <div class="table-card">
+    <table class="quotes-table">
+      <thead>
         <tr>
-          <td>
-            <a [routerLink]="['/admin/quotes', q.id]">{{ q.number }}</a>
-          </td>
-          <td>{{ q.client_name }}</td>
-          <td>
-            <span class="badge" [class.invoice]="q.status === 'invoice'">
-              {{ q.status === 'invoice' ? 'Fatura' : 'Orçamento' }}
-            </span>
-          </td>
-          <td>{{ q.total_amount | currency: 'EUR' : 'symbol' : '1.2-2' : 'pt' }}</td>
-          <td>{{ q.created_at | date: 'dd/MM/yyyy' }}</td>
-          <td>{{ q.sent_at ? (q.sent_at | date: 'dd/MM/yyyy') : '—' }}</td>
-          <td><button (click)="downloadPdf(q)" class="btn-sm">PDF</button></td>
+          <th>Número</th>
+          <th>Cliente</th>
+          <th>Estado</th>
+          <th class="right">Total</th>
+          <th>Data</th>
+          <th>Enviado</th>
+          <th></th>
         </tr>
-      }
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        @for (q of quotes(); track q.id) {
+          <tr>
+            <td class="number-cell">
+              <a [routerLink]="['/admin/quotes', q.id]" class="doc-link">{{ q.number }}</a>
+            </td>
+            <td class="client-cell">{{ q.client_name }}</td>
+            <td>
+              <span class="badge" [class.badge-invoice]="q.status === 'invoice'" [class.badge-quote]="q.status === 'quote'">
+                {{ q.status === 'invoice' ? 'Fatura' : 'Orçamento' }}
+              </span>
+            </td>
+            <td class="amount-cell right">{{ q.total_amount | currency:'EUR':'symbol':'1.2-2' }}</td>
+            <td class="date-cell">{{ q.created_at | date:'dd MMM yyyy' }}</td>
+            <td class="date-cell">{{ q.sent_at ? (q.sent_at | date:'dd MMM yyyy') : '—' }}</td>
+            <td class="actions-cell">
+              <a [routerLink]="['/admin/quotes', q.id]" class="action-btn" title="Ver documento">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </a>
+              <button (click)="downloadPdf(q)" class="action-btn" title="Descarregar PDF">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 }

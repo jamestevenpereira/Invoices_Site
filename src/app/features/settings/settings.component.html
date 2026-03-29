@@ -1,42 +1,110 @@
-<h2>Definições</h2>
-@if (loaded()) {
-  <form (ngSubmit)="save()" class="settings-form">
-    <section>
-      <h3>Custo por hora</h3>
-      <div class="slider-row">
-        <input type="range" min="10" max="100" step="1"
-          [ngModel]="hourlyRate()" (ngModelChange)="hourlyRate.set(+$event)" name="hourly_rate" />
-        <span class="rate-value">€{{ hourlyRate() }}/hora</span>
-      </div>
-    </section>
-    <section>
-      <h3>IVA</h3>
-      <label class="radio">
-        <input type="radio" name="vat_mode" value="exempt"
-          [ngModel]="vatMode()" (ngModelChange)="vatMode.set($event)" />
-        Isento (art.º 53.º CIVA)
-      </label>
-      <label class="radio">
-        <input type="radio" name="vat_mode" value="standard"
-          [ngModel]="vatMode()" (ngModelChange)="vatMode.set($event)" />
-        23% IVA
-      </label>
-    </section>
-    <section>
-      <h3>Email do proprietário</h3>
-      <input type="email" [ngModel]="ownerEmail()" (ngModelChange)="ownerEmail.set($event)"
-        name="owner_email" placeholder="o-seu-email@dominio.pt" />
-    </section>
-    <button type="submit" [disabled]="saving()">
-      {{ saving() ? 'A guardar...' : 'Guardar definições' }}
-    </button>
-    @if (saved()) {
-      <p class="success">Definições guardadas.</p>
-    }
-    @if (saveError()) {
-      <p class="error">{{ saveError() }}</p>
-    }
-  </form>
+<div class="settings-header">
+  <h1 class="page-title">Definições</h1>
+  <p class="page-subtitle">Configurações da agência e preferências de facturação</p>
+</div>
+
+@if (!loaded()) {
+  <div class="loading-state">A carregar…</div>
 } @else {
-  <p>A carregar...</p>
+  <form (ngSubmit)="save()" class="settings-form">
+
+    <!-- Empresa -->
+    <div class="settings-card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Agência</div>
+          <div class="card-sub">Identificação nos documentos enviados</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="fields-row">
+          <div class="field">
+            <label class="field-label">Nome da agência</label>
+            <input class="field-input" type="text"
+              [ngModel]="agencyName()" (ngModelChange)="agencyName.set($event)"
+              name="agency_name" placeholder="Ex. Studio Digital Lda" />
+          </div>
+          <div class="field">
+            <label class="field-label">Email de envio</label>
+            <input class="field-input" type="email"
+              [ngModel]="senderEmail()" (ngModelChange)="senderEmail.set($event)"
+              name="sender_email" placeholder="noreply@a-minha-agencia.pt" />
+          </div>
+        </div>
+        <div class="field" style="margin-top:.75rem">
+          <label class="field-label">Email do proprietário</label>
+          <input class="field-input" type="email"
+            [ngModel]="ownerEmail()" (ngModelChange)="ownerEmail.set($event)"
+            name="owner_email" placeholder="o-seu-email@dominio.pt" />
+          <span class="field-hint">Recebe cópias de todos os orçamentos enviados</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Financeiro -->
+    <div class="settings-card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Financeiro</div>
+          <div class="card-sub">Taxa horária e regime de IVA</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label class="field-label">Custo por hora</label>
+          <div class="slider-row">
+            <input type="range" min="10" max="200" step="5"
+              [ngModel]="hourlyRate()" (ngModelChange)="hourlyRate.set(+$event)"
+              name="hourly_rate" />
+            <span class="rate-value">{{ hourlyRate() | currency:'EUR':'symbol':'1.0-0' }}/h</span>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:1.25rem">
+          <label class="field-label">Regime de IVA</label>
+          <div class="radio-group">
+            <label class="radio-option" [class.selected]="vatMode() === 'exempt'">
+              <input type="radio" name="vat_mode" value="exempt"
+                [ngModel]="vatMode()" (ngModelChange)="vatMode.set($event)" />
+              <div class="radio-content">
+                <span class="radio-label">Isento de IVA</span>
+                <span class="radio-sub">Art.º 53.º do CIVA</span>
+              </div>
+            </label>
+            <label class="radio-option" [class.selected]="vatMode() === 'standard'">
+              <input type="radio" name="vat_mode" value="standard"
+                [ngModel]="vatMode()" (ngModelChange)="vatMode.set($event)" />
+              <div class="radio-content">
+                <span class="radio-label">IVA a 23%</span>
+                <span class="radio-sub">Regime normal</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="form-footer">
+      @if (saved()) {
+        <span class="success-msg">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Definições guardadas
+        </span>
+      }
+      @if (saveError()) {
+        <span class="error-msg">{{ saveError() }}</span>
+      }
+      <button type="submit" class="btn-primary" [disabled]="saving()">
+        {{ saving() ? 'A guardar…' : 'Guardar definições' }}
+      </button>
+    </div>
+
+  </form>
 }

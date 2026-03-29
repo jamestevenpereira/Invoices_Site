@@ -1,83 +1,167 @@
 .page-header {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.header-text { flex: 1; }
+
+.page-subtitle {
+  font-size: .875rem;
+  color: var(--c-text-muted);
+  margin-top: .25rem;
+}
+
+.alert-error {
+  padding: .75rem 1rem;
+  background: var(--c-danger-bg);
+  border: 1px solid rgba(239,68,68,.2);
+  border-radius: var(--radius-sm);
+  color: var(--c-danger);
+  font-size: .875rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ─── Empty state ─────────────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 1.5rem;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--c-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  color: var(--c-primary);
+}
+
+.empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--c-text);
+  margin-bottom: .375rem;
+}
+
+.empty-sub {
+  font-size: .875rem;
+  color: var(--c-text-muted);
+}
+
+/* ─── Table ───────────────────────────────────────────────────────── */
+.table-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
 .quotes-table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--c-surface);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
 
-  th, td {
-    padding: .75rem 1rem;
-    text-align: left;
+  thead tr {
+    background: var(--c-bg);
     border-bottom: 1px solid var(--c-border);
   }
 
-  thead tr { background: var(--c-bg); }
-
   th {
+    padding: .875rem 1.25rem;
+    text-align: left;
     font-size: .7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .06em;
     color: var(--c-text-muted);
+    white-space: nowrap;
+
+    &.right { text-align: right; }
   }
 
   tbody tr {
+    border-bottom: 1px solid var(--c-border);
     transition: background .1s;
-    &:hover { background: var(--c-bg); }
-    &:last-child td { border-bottom: none; }
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: #fafbff; }
   }
 
-  td { font-size: .875rem; color: var(--c-text); }
+  td {
+    padding: 1rem 1.25rem;
+    font-size: .875rem;
+    color: var(--c-text);
+    vertical-align: middle;
+  }
 }
 
-.number-cell { font-variant-numeric: tabular-nums; font-weight: 500; }
-.amount-cell { font-variant-numeric: tabular-nums; font-weight: 600; }
+.number-cell { width: 140px; }
+.client-cell { font-weight: 500; }
+.amount-cell { font-weight: 600; font-variant-numeric: tabular-nums; }
+.date-cell   { color: var(--c-text-2); font-size: .8125rem; white-space: nowrap; }
+.right       { text-align: right; }
+.actions-cell {
+  width: 80px;
+  text-align: right;
+  white-space: nowrap;
+}
 
+.doc-link {
+  color: var(--c-primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: .8125rem;
+  font-variant-numeric: tabular-nums;
+
+  &:hover { text-decoration: underline; }
+}
+
+/* ─── Status badges ───────────────────────────────────────────────── */
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: .2rem .6rem;
+  padding: .2rem .65rem;
   border-radius: 999px;
   font-size: .7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .04em;
-
-  &.badge-quote   { background: var(--c-warn-bg);    color: var(--c-warn);    }
-  &.badge-invoice { background: var(--c-success-bg); color: var(--c-success); }
+  white-space: nowrap;
 }
 
-.btn-sm {
+.badge-quote   { background: #fffbeb; color: #b45309; }
+.badge-invoice { background: var(--c-success-bg); color: #065f46; }
+
+/* ─── Icon action buttons ─────────────────────────────────────────── */
+.action-btn {
   display: inline-flex;
   align-items: center;
-  padding: .3rem .75rem;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
   border: 1px solid var(--c-border);
   border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: .8rem;
-  font-weight: 500;
   background: var(--c-surface);
-  color: var(--c-text);
-  transition: background .12s, border-color .12s;
+  color: var(--c-text-2);
+  cursor: pointer;
   text-decoration: none;
+  transition: background .12s, border-color .12s, color .12s;
 
-  &:hover { background: var(--c-bg); border-color: var(--c-border-strong); }
+  &:hover {
+    background: var(--c-primary-light);
+    border-color: rgba(79,70,229,.2);
+    color: var(--c-primary);
+  }
+
+  & + & { margin-left: .375rem; }
 }
-
-.empty-state {
-  text-align: center;
-  padding: 3rem;
-  color: var(--c-text-muted);
-  font-size: .9rem;
-}
-
-.error { color: var(--c-danger); font-size: .875rem; margin-top: .5rem; }
