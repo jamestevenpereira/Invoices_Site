@@ -1,109 +1,87 @@
-import { Injectable } from '@angular/core';
+import { ApplicationRef, createComponent, EnvironmentInjector, inject, Injectable } from '@angular/core';
 import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+import { QuotePreviewComponent } from '../../shared/components/quote-preview/quote-preview.component';
 import type { Quote } from '../models';
-
-const MARGIN = 20;
-const PAGE_W = 210;
-const COL = { service: MARGIN, hours: 120, rate: 150, sub: 180 };
 
 @Injectable({ providedIn: 'root' })
 export class QuotePdfService {
-  generatePdf(
+  private appRef = inject(ApplicationRef);
+  private envInjector = inject(EnvironmentInjector);
+
+  async generatePdf(
     quote: Quote,
     vatMode: 'exempt' | 'standard' = 'exempt',
-    agencyName: string = 'A Minha Agência Web',
-  ): void {
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-    let y = MARGIN;
-
-    // Header
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.text(agencyName, MARGIN, y);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(quote.number, PAGE_W - MARGIN, y, { align: 'right' });
-    y += 5;
-    doc.text(new Date(quote.created_at).toLocaleDateString('pt-PT'), PAGE_W - MARGIN, y, {
-      align: 'right',
+    agencyName = 'A Minha Agência Web',
+  ): Promise<void> {
+    // Off-screen container matching .paper dimensions (680px, padding 48px 56px)
+    const container = document.createElement('div');
+    Object.assign(container.style, {
+      position: 'absolute',
+      left: '-9999px',
+      top: '0',
+      width: '680px',
+      padding: '48px 56px',
+      background: '#ffffff',
+      boxSizing: 'border-box',
     });
-    y += 12;
+    document.body.appendChild(container);
 
-    // Client
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.text(quote.client_name, MARGIN, y);
-    y += 5;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(quote.client_email, MARGIN, y);
-    y += 12;
+    // Dynamically render QuotePreviewComponent into the off-screen container
+    const compRef = createComponent(QuotePreviewComponent, {
+      environmentInjector: this.envInjector,
+      hostElement: container,
+    });
+    compRef.setInput('quote', quote);
+    compRef.setInput('vatMode', vatMode);
+    compRef.setInput('agencyName', agencyName);
+    this.appRef.attachView(compRef.hostView);
+    compRef.changeDetectorRef.detectChanges();
 
-    // Table header
-    doc.setFillColor(241, 245, 249);
-    doc.rect(MARGIN, y - 4, PAGE_W - MARGIN * 2, 8, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.text('Serviço', COL.service, y);
-    doc.text('Horas', COL.hours, y);
-    doc.text('€/hora', COL.rate, y);
-    doc.text('Subtotal', COL.sub, y);
-    y += 6;
+    // Let styles apply
+    await new Promise<void>(r => setTimeout(r, 150));
 
-    // Items
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    for (const item of quote.items) {
-      doc.text(item.name, COL.service, y);
-      doc.text(`${item.hours}h`, COL.hours, y);
-      doc.text(this._eur(quote.hourly_rate), COL.rate, y);
-      doc.text(this._eur(item.subtotal), COL.sub, y);
-      y += 7;
-      doc.setDrawColor(241, 245, 249);
-      doc.line(MARGIN, y - 2, PAGE_W - MARGIN, y - 2);
+    try {
+      const canvas = await html2canvas(container, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const imgH = (canvas.height * pageW) / canvas.width;
+
+      if (imgH <= pageH) {
+        pdf.addImage(imgData, 'PNG', 0, 0, pageW, imgH);
+      } else {
+        // Multi-page: slice canvas per A4 page
+        const ratio = pageW / canvas.width;
+        const sliceH = Math.floor(pageH / ratio);
+        let srcY = 0;
+        while (srcY < canvas.height) {
+          if (srcY > 0) pdf.addPage();
+          const sliceCanvas = document.createElement('canvas');
+          sliceCanvas.width = canvas.width;
+          sliceCanvas.height = Math.min(sliceH, canvas.height - srcY);
+          sliceCanvas.getContext('2d')!.drawImage(
+            canvas,
+            0, srcY, sliceCanvas.width, sliceCanvas.height,
+            0, 0, sliceCanvas.width, sliceCanvas.height,
+          );
+          pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageW, sliceCanvas.height * ratio);
+          srcY += sliceH;
+        }
+      }
+
+      pdf.save(`${quote.number}.pdf`);
+    } finally {
+      this.appRef.detachView(compRef.hostView);
+      compRef.destroy();
+      document.body.removeChild(container);
     }
-
-    y += 4;
-    doc.line(MARGIN, y, PAGE_W - MARGIN, y);
-    y += 6;
-
-    // Totals
-    const right = PAGE_W - MARGIN;
-    doc.setFont('helvetica', 'normal');
-    doc.text('Subtotal', right - 60, y);
-    doc.text(this._eur(quote.total_amount), right, y, { align: 'right' });
-    y += 6;
-
-    if (vatMode === 'exempt') {
-      doc.setFontSize(8);
-      doc.setTextColor(100, 116, 139);
-      doc.text('Isento nos termos do art.º 53.º do CIVA', MARGIN, y);
-      doc.setTextColor(0, 0, 0);
-      doc.setFontSize(10);
-    } else {
-      const vat = quote.total_amount * 0.23;
-      doc.text('IVA 23%', right - 60, y);
-      doc.text(this._eur(vat), right, y, { align: 'right' });
-      y += 6;
-      doc.setFont('helvetica', 'bold');
-      doc.text('Total', right - 60, y);
-      doc.text(this._eur(quote.total_amount * 1.23), right, y, { align: 'right' });
-    }
-
-    y += 10;
-    if (quote.notes) {
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(100, 116, 139);
-      const noteLines = doc.splitTextToSize(`Notas: ${quote.notes}`, PAGE_W - MARGIN * 2);
-      doc.text(noteLines, MARGIN, y);
-      doc.setTextColor(0, 0, 0);
-    }
-
-    doc.save(`${quote.number}.pdf`);
-  }
-
-  private _eur(value: number): string {
-    return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(value);
   }
 }

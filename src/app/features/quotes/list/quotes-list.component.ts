@@ -3,7 +3,8 @@ import { RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { QuoteService } from '../../../core/services/quote.service';
 import { QuotePdfService } from '../../../core/services/quote-pdf.service';
-import type { Quote } from '../../../core/models';
+import { SettingsService } from '../../../core/services/settings.service';
+import type { Quote, Settings } from '../../../core/models';
 
 @Component({
   selector: 'app-quotes-list',
@@ -16,19 +17,30 @@ import type { Quote } from '../../../core/models';
 export class QuotesListComponent implements OnInit {
   private quoteService = inject(QuoteService);
   private pdfService = inject(QuotePdfService);
+  private settingsService = inject(SettingsService);
   quotes = signal<Quote[]>([]);
+  settings = signal<Settings | null>(null);
   error = signal('');
 
   async ngOnInit() {
     try {
-      this.quotes.set(await this.quoteService.getQuotes());
+      const [quotes, settings] = await Promise.all([
+        this.quoteService.getQuotes(),
+        this.settingsService.getSettings(),
+      ]);
+      this.quotes.set(quotes);
+      this.settings.set(settings);
     } catch {
       this.error.set('Erro ao carregar orçamentos');
     }
   }
 
-  downloadPdf(q: Quote) {
-    this.pdfService.generatePdf(q);
+  async downloadPdf(q: Quote) {
+    await this.pdfService.generatePdf(
+      q,
+      this.settings()?.vat_mode ?? 'exempt',
+      this.settings()?.agency_name ?? 'A Minha Agência Web',
+    );
   }
 
   async deleteQuote(q: Quote) {

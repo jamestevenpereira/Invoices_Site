@@ -44,10 +44,10 @@ export class QuoteDetailComponent implements OnInit {
     }
   }
 
-  downloadPdf() {
+  async downloadPdf() {
     const q = this.quote();
     if (q)
-      this.pdfService.generatePdf(
+      await this.pdfService.generatePdf(
         q,
         this.settings()?.vat_mode ?? 'exempt',
         this.settings()?.agency_name ?? 'A Minha Agência Web',
