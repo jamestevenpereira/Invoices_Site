@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { QuoteService } from '../../../core/services/quote.service';
 import { ServiceCatalogueService } from '../../../core/services/service-catalogue.service';
 import { SettingsService } from '../../../core/services/settings.service';
@@ -30,13 +30,25 @@ export class QuoteBuilderComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private pdfService = inject(QuotePdfService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
+  // Edit mode
+  editId = signal<string | null>(null);
+  editQuote = signal<Quote | null>(null);
+
+  // Form fields
   clientName = signal('');
   clientEmail = signal('');
+  clientNif = signal('');
   notes = signal('');
+  paymentTerms = signal('');
+  validUntil = signal('');
   hourlyRate = signal(15);
   items = signal<QuoteItem[]>([]);
+
+  // UI state
   saving = signal(false);
+  loading = signal(false);
   error = signal('');
   savedQuote = signal<Quote | null>(null);
   settings = signal<Settings | null>(null);
@@ -44,34 +56,47 @@ export class QuoteBuilderComponent implements OnInit {
   servicesByCategory = signal<Record<string, Service[]>>({});
   showPreview = signal(false);
 
+  isEditMode = computed(() => this.editId() !== null);
+  pageTitle = computed(() => this.isEditMode() ? 'Editar Orçamento' : 'Novo Orçamento');
+
   totalHours = computed(() => this.items().reduce((s, i) => s + i.hours, 0));
   totalAmount = computed(() => this.totalHours() * this.hourlyRate());
 
-  previewQuote = computed<Quote>(() => ({
-    id: 'draft',
-    number: 'ORC-RASCUNHO',
-    client_name: this.clientName() || 'Nome do cliente',
-    client_email: this.clientEmail() || '',
-    status: 'quote',
-    hourly_rate: this.hourlyRate(),
-    items: this.items(),
-    notes: this.notes(),
-    total_hours: this.totalHours(),
-    total_amount: this.totalAmount(),
-    quote_number: null,
-    sent_at: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }));
+  previewQuote = computed<Quote>(() => {
+    const eq = this.editQuote();
+    return {
+      id: eq?.id ?? 'draft',
+      number: eq?.number ?? 'ORC/RASCUNHO',
+      client_name: this.clientName() || 'Nome do cliente',
+      client_email: this.clientEmail() || '',
+      client_nif: this.clientNif(),
+      status: 'quote',
+      hourly_rate: this.hourlyRate(),
+      items: this.items(),
+      notes: this.notes(),
+      payment_terms: this.paymentTerms(),
+      valid_until: this.validUntil() || null,
+      total_hours: this.totalHours(),
+      total_amount: this.totalAmount(),
+      quote_number: null,
+      sent_at: null,
+      created_at: eq?.created_at ?? new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+  });
 
   async ngOnInit() {
+    this.loading.set(true);
     try {
+      const id = this.route.snapshot.paramMap.get('id');
+      this.editId.set(id);
+
       const [services, settings] = await Promise.all([
         this.catalogueService.getServices(),
         this.settingsService.getSettings(),
       ]);
       this.settings.set(settings);
-      this.hourlyRate.set(settings.hourly_rate);
+
       const cats = [...new Set(services.filter((s) => s.active).map((s) => s.category))].sort();
       this.categories.set(cats);
       this.servicesByCategory.set(
@@ -79,8 +104,27 @@ export class QuoteBuilderComponent implements OnInit {
           cats.map((c) => [c, services.filter((s) => s.category === c && s.active)]),
         ),
       );
+
+      if (id) {
+        // Edit mode: load existing quote
+        const quote = await this.quoteService.getQuote(id);
+        this.editQuote.set(quote);
+        this.clientName.set(quote.client_name);
+        this.clientEmail.set(quote.client_email);
+        this.clientNif.set(quote.client_nif ?? '');
+        this.notes.set(quote.notes ?? '');
+        this.paymentTerms.set(quote.payment_terms ?? '');
+        this.validUntil.set(quote.valid_until ?? '');
+        this.hourlyRate.set(quote.hourly_rate);
+        this.items.set(quote.items);
+      } else {
+        // Create mode: use default rate from settings
+        this.hourlyRate.set(settings.hourly_rate);
+      }
     } catch (e: unknown) {
       this.error.set(e instanceof Error ? e.message : 'Erro ao carregar dados');
+    } finally {
+      this.loading.set(false);
     }
   }
 
@@ -108,16 +152,26 @@ export class QuoteBuilderComponent implements OnInit {
   async save() {
     this.saving.set(true);
     this.error.set('');
+    const payload = {
+      client_name: this.clientName(),
+      client_email: this.clientEmail(),
+      client_nif: this.clientNif(),
+      hourly_rate: this.hourlyRate(),
+      items: this.items().map((i) => ({ ...i, subtotal: i.hours * this.hourlyRate() })),
+      notes: this.notes(),
+      payment_terms: this.paymentTerms(),
+      valid_until: this.validUntil() || null,
+    };
     try {
-      const quote = await this.quoteService.createQuote({
-        client_name: this.clientName(),
-        client_email: this.clientEmail(),
-        hourly_rate: this.hourlyRate(),
-        items: this.items().map((i) => ({ ...i, subtotal: i.hours * this.hourlyRate() })),
-        notes: this.notes(),
-      });
-      this.savedQuote.set(quote);
-      this.router.navigate(['/admin/quotes', quote.id]);
+      const id = this.editId();
+      if (id) {
+        await this.quoteService.updateQuote(id, payload);
+        this.router.navigate(['/admin/quotes', id]);
+      } else {
+        const quote = await this.quoteService.createQuote(payload);
+        this.savedQuote.set(quote);
+        this.router.navigate(['/admin/quotes', quote.id]);
+      }
     } catch (e: unknown) {
       this.error.set(e instanceof Error ? e.message : 'Erro ao guardar');
     } finally {

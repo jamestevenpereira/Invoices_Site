@@ -13,36 +13,29 @@ const itemSchema = z.object({
 const schema = z.object({
   client_name: z.string().min(1),
   client_email: z.string().email(),
+  client_nif: z.string().default(''),
   hourly_rate: z.number().min(1),
   items: z.array(itemSchema).min(1),
   notes: z.string().default(''),
+  payment_terms: z.string().default(''),
+  valid_until: z.string().nullable().default(null),
 });
-
-function clientInitials(name: string): string {
-  return name
-    .trim()
-    .split(/\s+/)
-    .map(w => w[0]?.toUpperCase() ?? '')
-    .join('')
-    .slice(0, 3) || 'ORC';
-}
 
 async function generateNumber(
   supabase: ReturnType<typeof import('../_lib/supabase').createAdminClient>,
-  clientName: string
 ): Promise<string> {
   const year = new Date().getFullYear();
-  const prefix = clientInitials(clientName);
+  const prefix = `ORC/${year}/`;
   const { data } = await supabase
     .from('quotes')
     .select('number')
-    .like('number', `${prefix}-${year}-%`)
+    .like('number', `${prefix}%`)
     .order('number', { ascending: false })
     .limit(1);
 
-  const lastNum = data?.[0]?.number;
-  const seq = lastNum ? parseInt(lastNum.split('-')[2], 10) + 1 : 1;
-  return `${prefix}-${year}-${String(seq).padStart(3, '0')}`;
+  const lastNum = data?.[0]?.number as string | undefined;
+  const seq = lastNum ? parseInt(lastNum.split('/')[2], 10) + 1 : 1;
+  return `${prefix}${String(seq).padStart(3, '0')}`;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -53,7 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!result.success) return res.status(400).json({ message: 'Dados inválidos' });
 
   const supabase = createAdminClient();
-  const number = await generateNumber(supabase, result.data.client_name);
+  const number = await generateNumber(supabase);
   const { items, hourly_rate } = result.data;
   const total_hours = items.reduce((sum, i) => sum + i.hours, 0);
   const total_amount = total_hours * hourly_rate;

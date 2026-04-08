@@ -4,12 +4,18 @@
   <header class="preview-header">
     <div class="header-left">
       <div class="agency">{{ agencyName() }}</div>
+      @if (businessNif()) {
+        <div class="agency-nif">NIF {{ businessNif() }}</div>
+      }
       <div class="agency-sub">Desenvolvimento Web Profissional</div>
     </div>
     <div class="header-right">
       <span class="doc-badge">{{ quote().status === 'invoice' ? 'Fatura' : 'Orçamento' }}</span>
       <div class="doc-number">{{ quote().number }}</div>
       <div class="doc-date">{{ quote().created_at | date:'dd/MM/yyyy' }}</div>
+      @if (quote().status === 'quote' && quote().valid_until) {
+        <div class="doc-validity">Válido até {{ quote().valid_until | date:'dd/MM/yyyy' }}</div>
+      }
     </div>
   </header>
 
@@ -17,6 +23,9 @@
   <div class="client-block">
     <div class="client-label">Faturar a</div>
     <div class="client-name">{{ quote().client_name }}</div>
+    @if (quote().client_nif) {
+      <div class="client-nif">NIF {{ quote().client_nif }}</div>
+    }
     <div class="client-email">{{ quote().client_email }}</div>
   </div>
 
@@ -50,7 +59,11 @@
         <span class="t-value">{{ quote().total_amount | currency:'EUR':'symbol':'1.2-2' }}</span>
       </div>
       @if (vatMode() === 'exempt') {
-        <div class="vat-note">Isento nos termos do art.º 53.º do CIVA</div>
+        <div class="total-row grand">
+          <span class="t-label">Total</span>
+          <span class="t-value">{{ quote().total_amount | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="vat-note">Isento de IVA — art.º 53.º do CIVA</div>
       } @else {
         <div class="total-row">
           <span class="t-label">IVA (23%)</span>
@@ -64,7 +77,15 @@
     </div>
   </div>
 
-  <!-- ─── Notes ───────────────────────────────────────────────────── -->
+  <!-- ─── Condições de pagamento ───────────────────────────────────── -->
+  @if (quote().payment_terms) {
+    <div class="payment-block">
+      <div class="payment-label">Condições de pagamento</div>
+      <div class="payment-text">{{ quote().payment_terms }}</div>
+    </div>
+  }
+
+  <!-- ─── Notas ────────────────────────────────────────────────────── -->
   @if (quote().notes) {
     <div class="notes-block">
       <div class="notes-label">Notas</div>
@@ -74,7 +95,10 @@
 
   <!-- ─── Footer ──────────────────────────────────────────────────── -->
   <footer class="preview-footer">
-    Obrigado pela preferência &mdash; {{ agencyName() }}
+    @if (quote().status === 'invoice' && iban()) {
+      <div class="footer-iban">Pagamento por transferência — IBAN: {{ iban() }}</div>
+    }
+    <div class="footer-thanks">Obrigado pela preferência &mdash; {{ agencyName() }}</div>
   </footer>
 
 </div>

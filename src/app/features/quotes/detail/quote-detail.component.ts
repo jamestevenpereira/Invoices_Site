@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { QuoteService } from '../../../core/services/quote.service';
 import { QuotePdfService } from '../../../core/services/quote-pdf.service';
 import { SettingsService } from '../../../core/services/settings.service';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { QuotePreviewComponent } from '../../../shared/components/quote-preview/quote-preview.component';
 import { apiRequest } from '../../../core/utils/api-client';
 import type { Quote, Settings } from '../../../core/models';

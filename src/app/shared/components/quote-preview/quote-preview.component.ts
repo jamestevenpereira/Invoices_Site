@@ -14,4 +14,6 @@ export class QuotePreviewComponent {
   quote = input.required<Quote>();
   vatMode = input<'exempt' | 'standard'>('exempt');
   agencyName = input<string>('A Minha Agência Web');
+  businessNif = input<string>('');
+  iban = input<string>('');
 }

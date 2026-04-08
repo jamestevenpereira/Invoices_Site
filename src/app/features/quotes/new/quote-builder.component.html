@@ -6,7 +6,9 @@
       <span class="panel-label">Catálogo</span>
     </div>
     <div class="catalogue-body">
-      @if (categories().length === 0) {
+      @if (loading()) {
+        <p class="catalogue-empty">A carregar…</p>
+      } @else if (categories().length === 0) {
         <p class="catalogue-empty">Nenhum serviço activo.<br>Vai a Serviços para criar.</p>
       }
       @for (category of categories(); track category) {
@@ -32,7 +34,7 @@
 
     <!-- Header -->
     <div class="editor-header">
-      <h1 class="page-title">Novo Orçamento</h1>
+      <h1 class="page-title">{{ pageTitle() }}</h1>
       <div class="view-toggle">
         <button
           class="toggle-btn"
@@ -53,7 +55,7 @@
           (click)="save()"
           [disabled]="saving() || items().length === 0"
           class="btn-primary"
-        >{{ saving() ? 'A guardar…' : 'Guardar' }}</button>
+        >{{ saving() ? 'A guardar…' : (isEditMode() ? 'Guardar alterações' : 'Guardar') }}</button>
       </div>
     </div>
 
@@ -92,15 +94,14 @@
             </div>
           </div>
           <div class="field" style="margin-top:.75rem">
-            <label class="field-label">Notas <span class="optional">(opcional)</span></label>
-            <textarea
-              class="field-input field-textarea"
-              [ngModel]="notes()"
-              (ngModelChange)="notes.set($event)"
-              name="notes"
-              placeholder="Condições de pagamento, prazos, observações…"
-              rows="2"
-            ></textarea>
+            <label class="field-label">NIF do cliente <span class="optional">(opcional)</span></label>
+            <input
+              class="field-input"
+              [ngModel]="clientNif()"
+              (ngModelChange)="clientNif.set($event)"
+              name="clientNif"
+              placeholder="Ex. 123456789"
+            />
           </div>
         </div>
 
@@ -163,6 +164,45 @@
           </div>
         </div>
 
+        <!-- Condições e notas -->
+        <div class="section-card">
+          <div class="section-title">Condições e notas</div>
+          <div class="field">
+            <label class="field-label">Condições de pagamento <span class="optional">(opcional)</span></label>
+            <textarea
+              class="field-input field-textarea"
+              [ngModel]="paymentTerms()"
+              (ngModelChange)="paymentTerms.set($event)"
+              name="paymentTerms"
+              placeholder="Ex. 50% adiantamento, restante na entrega · Pagamento a 30 dias"
+              rows="2"
+            ></textarea>
+          </div>
+          <div class="fields-row" style="margin-top:.75rem">
+            <div class="field">
+              <label class="field-label">Válido até <span class="optional">(opcional)</span></label>
+              <input
+                class="field-input"
+                type="date"
+                [ngModel]="validUntil()"
+                (ngModelChange)="validUntil.set($event)"
+                name="validUntil"
+              />
+            </div>
+          </div>
+          <div class="field" style="margin-top:.75rem">
+            <label class="field-label">Notas internas <span class="optional">(opcional)</span></label>
+            <textarea
+              class="field-input field-textarea"
+              [ngModel]="notes()"
+              (ngModelChange)="notes.set($event)"
+              name="notes"
+              placeholder="Observações adicionais…"
+              rows="2"
+            ></textarea>
+          </div>
+        </div>
+
       </div>
     }
 
@@ -173,6 +213,8 @@
           [quote]="previewQuote()"
           [vatMode]="settings()?.vat_mode ?? 'exempt'"
           [agencyName]="settings()?.agency_name ?? 'A Minha Agência Web'"
+          [businessNif]="settings()?.nif ?? ''"
+          [iban]="settings()?.iban ?? ''"
         />
       </div>
     }
