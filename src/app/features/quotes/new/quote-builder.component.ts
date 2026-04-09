@@ -149,6 +149,19 @@ export class QuoteBuilderComponent implements OnInit {
     this.items.update((list) => list.filter((i) => i.service_id !== serviceId));
   }
 
+  readonly paymentSuggestions = [
+    '50% adiantamento, restante na entrega',
+    'Pagamento integral adiantado',
+    'Pagamento na entrega do projecto',
+    'Pagamento a 15 dias após entrega',
+    'Pagamento a 30 dias após entrega',
+    '1/3 início · 1/3 meio · 1/3 final',
+  ];
+
+  applyPaymentSuggestion(text: string) {
+    this.paymentTerms.set(text);
+  }
+
   async save() {
     this.saving.set(true);
     this.error.set('');

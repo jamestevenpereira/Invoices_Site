@@ -169,12 +169,22 @@
           <div class="section-title">Condições e notas</div>
           <div class="field">
             <label class="field-label">Condições de pagamento <span class="optional">(opcional)</span></label>
+            <div class="suggestions-row">
+              @for (s of paymentSuggestions; track s) {
+                <button
+                  type="button"
+                  class="suggestion-chip"
+                  [class.active]="paymentTerms() === s"
+                  (click)="applyPaymentSuggestion(s)"
+                >{{ s }}</button>
+              }
+            </div>
             <textarea
               class="field-input field-textarea"
               [ngModel]="paymentTerms()"
               (ngModelChange)="paymentTerms.set($event)"
               name="paymentTerms"
-              placeholder="Ex. 50% adiantamento, restante na entrega · Pagamento a 30 dias"
+              placeholder="Selecciona uma sugestão acima ou escreve aqui…"
               rows="2"
             ></textarea>
           </div>
