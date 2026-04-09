@@ -54,10 +54,6 @@
   <!-- ─── Totals ──────────────────────────────────────────────────── -->
   <div class="totals-wrapper">
     <div class="totals">
-      <div class="total-row">
-        <span class="t-label">Subtotal</span>
-        <span class="t-value">{{ quote().total_amount | currency:'EUR':'symbol':'1.2-2' }}</span>
-      </div>
       @if (vatMode() === 'exempt') {
         <div class="total-row grand">
           <span class="t-label">Total</span>
@@ -65,6 +61,10 @@
         </div>
         <div class="vat-note">Isento de IVA — art.º 53.º do CIVA</div>
       } @else {
+        <div class="total-row">
+          <span class="t-label">Subtotal</span>
+          <span class="t-value">{{ quote().total_amount | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
         <div class="total-row">
           <span class="t-label">IVA (23%)</span>
           <span class="t-value">{{ quote().total_amount * 0.23 | currency:'EUR':'symbol':'1.2-2' }}</span>
