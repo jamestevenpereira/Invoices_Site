@@ -4,6 +4,16 @@
   <aside class="catalogue-panel">
     <div class="catalogue-header">
       <span class="panel-label">Catálogo</span>
+      <div class="search-wrap">
+        <input 
+          class="search-input" 
+          type="text" 
+          placeholder="Pesquisar…"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+        <span class="search-icon">🔍</span>
+      </div>
     </div>
     <div class="catalogue-body">
       @if (loading()) {
@@ -53,7 +63,7 @@
         }
         <button
           (click)="save()"
-          [disabled]="saving() || items().length === 0"
+          [disabled]="saving() || !isValid()"
           class="btn-primary"
         >{{ saving() ? 'A guardar…' : (isEditMode() ? 'Guardar alterações' : 'Guardar') }}</button>
       </div>
@@ -241,13 +251,13 @@
             </div>
           </div>
           <div class="field" style="margin-top:.75rem">
-            <label class="field-label">Notas internas <span class="optional">(opcional)</span></label>
+            <label class="field-label">Notas/Observações <span class="optional">(opcional)</span></label>
             <textarea
               class="field-input field-textarea"
               [ngModel]="notes()"
               (ngModelChange)="notes.set($event)"
               name="notes"
-              placeholder="Observações adicionais…"
+              placeholder="Notas ou observações para o cliente…"
               rows="2"
             ></textarea>
           </div>

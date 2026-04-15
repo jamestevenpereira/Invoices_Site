@@ -19,6 +19,8 @@ export class QuotePdfService {
     quote: Quote,
     vatMode: 'exempt' | 'standard' = 'exempt',
     agencyName = 'A Minha Agência Web',
+    businessNif = '',
+    iban = '',
   ): Promise<void> {
     // Off-screen container matching .paper dimensions (680px, padding 48px 56px)
     const container = document.createElement('div');
@@ -41,6 +43,8 @@ export class QuotePdfService {
     compRef.setInput('quote', quote);
     compRef.setInput('vatMode', vatMode);
     compRef.setInput('agencyName', agencyName);
+    compRef.setInput('businessNif', businessNif);
+    compRef.setInput('iban', iban);
     this.appRef.attachView(compRef.hostView);
     compRef.changeDetectorRef.detectChanges();
 
@@ -115,7 +119,8 @@ export class QuotePdfService {
         pageIndex++;
       }
 
-      pdf.save(`${quote.number}.pdf`);
+      const safeNumber = quote.number.replace(/[\/\\]/g, '-');
+      pdf.save(`${safeNumber}.pdf`);
     } finally {
       this.appRef.detachView(compRef.hostView);
       compRef.destroy();

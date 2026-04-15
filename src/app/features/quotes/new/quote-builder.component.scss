@@ -33,6 +33,41 @@
   color: var(--c-text-muted);
 }
 
+.search-wrap {
+  margin-top: .625rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: .375rem .75rem .375rem 1.75rem;
+  font-size: .8125rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: inherit;
+  transition: border-color .12s, box-shadow .12s;
+
+  &::placeholder { color: var(--c-text-muted); opacity: .7; }
+
+  &:focus {
+    outline: none;
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 2px rgba(79,70,229,.1);
+  }
+}
+
+.search-icon {
+  position: absolute;
+  left: .5rem;
+  font-size: .75rem;
+  opacity: .5;
+  pointer-events: none;
+}
+
 .catalogue-body {
   padding: .75rem;
   display: flex;

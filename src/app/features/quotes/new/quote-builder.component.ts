@@ -2,9 +2,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   OnInit,
   signal,
+  untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
@@ -32,6 +34,18 @@ export class QuoteBuilderComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
+  constructor() {
+    effect(() => {
+      const rate = this.hourlyRate();
+      // Update all item subtotals when rate changes
+      untracked(() => {
+        this.items.update((list) =>
+          list.map((i) => ({ ...i, subtotal: i.hours * rate })),
+        );
+      });
+    });
+  }
+
   // Edit mode
   editId = signal<string | null>(null);
   editQuote = signal<Quote | null>(null);
@@ -54,16 +68,50 @@ export class QuoteBuilderComponent implements OnInit {
   error = signal('');
   savedQuote = signal<Quote | null>(null);
   settings = signal<Settings | null>(null);
-  categories = signal<string[]>([]);
-  servicesByCategory = signal<Record<string, Service[]>>({});
+  categoriesSource = signal<string[]>([]);
+  servicesByCategorySource = signal<Record<string, Service[]>>({});
+  searchTerm = signal('');
+
+  categories = computed(() => {
+    const search = this.searchTerm().toLowerCase();
+    if (!search) return this.categoriesSource();
+    
+    // Valid categories are those that contain at least one service matching the search
+    return this.categoriesSource().filter(cat => 
+      this.servicesByCategorySource()[cat].some(s => 
+        s.name.toLowerCase().includes(search) || cat.toLowerCase().includes(search)
+      )
+    );
+  });
+
+  servicesByCategory = computed(() => {
+    const search = this.searchTerm().toLowerCase();
+    const source = this.servicesByCategorySource();
+    if (!search) return source;
+
+    const filtered: Record<string, Service[]> = {};
+    for (const cat of this.categories()) {
+      filtered[cat] = source[cat].filter(s => 
+        s.name.toLowerCase().includes(search) || cat.toLowerCase().includes(search)
+      );
+    }
+    return filtered;
+  });
+
   showPreview = signal(false);
+
+  isValid = computed(() => {
+    return this.clientName().trim().length > 0 && 
+           this.clientEmail().trim().length > 0 && 
+           this.items().length > 0;
+  });
 
   isEditMode = computed(() => this.editId() !== null);
   pageTitle = computed(() => this.isEditMode() ? 'Editar Orçamento' : 'Novo Orçamento');
 
   totalHours = computed(() => this.items().reduce((s, i) => s + i.hours, 0));
   subtotal = computed(() => this.totalHours() * this.hourlyRate());
-  totalAmount = computed(() => this.subtotal() - this.discountAmount());
+  totalAmount = computed(() => Math.max(0, this.subtotal() - this.discountAmount()));
 
   previewQuote = computed<Quote>(() => {
     const eq = this.editQuote();
@@ -103,8 +151,8 @@ export class QuoteBuilderComponent implements OnInit {
       this.settings.set(settings);
 
       const cats = [...new Set(services.filter((s) => s.active).map((s) => s.category))].sort();
-      this.categories.set(cats);
-      this.servicesByCategory.set(
+      this.categoriesSource.set(cats);
+      this.servicesByCategorySource.set(
         Object.fromEntries(
           cats.map((c) => [c, services.filter((s) => s.category === c && s.active)]),
         ),
@@ -203,11 +251,14 @@ export class QuoteBuilderComponent implements OnInit {
 
   downloadPdf() {
     const q = this.savedQuote();
+    const s = this.settings();
     if (q)
       this.pdfService.generatePdf(
         q,
-        this.settings()?.vat_mode ?? 'exempt',
-        this.settings()?.agency_name ?? 'A Minha Agência Web',
+        s?.vat_mode ?? 'exempt',
+        s?.agency_name ?? 'A Minha Agência Web',
+        s?.nif ?? '',
+        s?.iban ?? '',
       );
   }
 }
