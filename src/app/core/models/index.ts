@@ -10,10 +10,13 @@ export interface Quote {
   number: string;
   client_name: string;
   client_email: string;
+  client_nif: string;
   status: 'quote' | 'invoice';
   hourly_rate: number;
   items: QuoteItem[];
   notes: string;
+  payment_terms: string;
+  valid_until: string | null;
   total_hours: number;
   total_amount: number;
   discount_amount: number;
@@ -40,14 +43,19 @@ export interface Settings {
   vat_mode: 'exempt' | 'standard';
   agency_name: string;
   sender_email: string;
+  nif: string;
+  iban: string;
 }
 
 export interface CreateQuotePayload {
   client_name: string;
   client_email: string;
+  client_nif: string;
   hourly_rate: number;
   items: QuoteItem[];
   notes: string;
+  payment_terms: string;
+  valid_until: string | null;
   discount_amount: number;
   discount_label: string;
 }
@@ -55,9 +63,12 @@ export interface CreateQuotePayload {
 export interface UpdateQuotePayload {
   client_name?: string;
   client_email?: string;
+  client_nif?: string;
   hourly_rate?: number;
   items?: QuoteItem[];
   notes?: string;
+  payment_terms?: string;
+  valid_until?: string | null;
   status?: 'quote' | 'invoice';
   discount_amount?: number;
   discount_label?: string;
