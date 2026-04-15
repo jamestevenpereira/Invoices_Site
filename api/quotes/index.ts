@@ -16,6 +16,8 @@ const schema = z.object({
   hourly_rate: z.number().min(1),
   items: z.array(itemSchema).min(1),
   notes: z.string().default(''),
+  discount_amount: z.number().min(0).default(0),
+  discount_label: z.string().default(''),
 });
 
 function clientInitials(name: string): string {
@@ -54,9 +56,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const supabase = createAdminClient();
   const number = await generateNumber(supabase, result.data.client_name);
-  const { items, hourly_rate } = result.data;
+  const { items, hourly_rate, discount_amount } = result.data;
   const total_hours = items.reduce((sum, i) => sum + i.hours, 0);
-  const total_amount = total_hours * hourly_rate;
+  const total_amount = total_hours * hourly_rate - discount_amount;
 
   const { data, error } = await supabase
     .from('quotes')

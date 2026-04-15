@@ -43,9 +43,12 @@ export class QuoteBuilderComponent implements OnInit {
   categories = signal<string[]>([]);
   servicesByCategory = signal<Record<string, Service[]>>({});
   showPreview = signal(false);
+  discountAmount = signal(0);
+  discountLabel = signal('');
 
   totalHours = computed(() => this.items().reduce((s, i) => s + i.hours, 0));
-  totalAmount = computed(() => this.totalHours() * this.hourlyRate());
+  subtotal = computed(() => this.totalHours() * this.hourlyRate());
+  totalAmount = computed(() => this.subtotal() - this.discountAmount());
 
   previewQuote = computed<Quote>(() => ({
     id: 'draft',
@@ -58,6 +61,8 @@ export class QuoteBuilderComponent implements OnInit {
     notes: this.notes(),
     total_hours: this.totalHours(),
     total_amount: this.totalAmount(),
+    discount_amount: this.discountAmount(),
+    discount_label: this.discountLabel(),
     quote_number: null,
     sent_at: null,
     created_at: new Date().toISOString(),
@@ -115,6 +120,8 @@ export class QuoteBuilderComponent implements OnInit {
         hourly_rate: this.hourlyRate(),
         items: this.items().map((i) => ({ ...i, subtotal: i.hours * this.hourlyRate() })),
         notes: this.notes(),
+        discount_amount: this.discountAmount(),
+        discount_label: this.discountLabel(),
       });
       this.savedQuote.set(quote);
       this.router.navigate(['/admin/quotes', quote.id]);

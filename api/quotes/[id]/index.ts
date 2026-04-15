@@ -17,6 +17,8 @@ const schema = z.object({
   items: z.array(itemSchema).optional(),
   notes: z.string().optional(),
   status: z.enum(['invoice']).optional(),
+  discount_amount: z.number().min(0).optional(),
+  discount_label: z.string().optional(),
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -37,18 +39,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const supabase = createAdminClient();
   const updates: Record<string, unknown> = { ...result.data };
 
-  // Recompute totals if items or rate changed
-  if (result.data.items !== undefined || result.data.hourly_rate !== undefined) {
+  // Recompute totals if items, rate or discount changed
+  if (
+    result.data.items !== undefined ||
+    result.data.hourly_rate !== undefined ||
+    result.data.discount_amount !== undefined
+  ) {
     const { data: current } = await supabase
       .from('quotes')
-      .select('items, hourly_rate')
+      .select('items, hourly_rate, discount_amount')
       .eq('id', id)
       .single();
 
     const items = (result.data.items ?? (current?.items as Array<{ hours: number }> | null) ?? []) as Array<{ hours: number }>;
     const rate = result.data.hourly_rate ?? (current?.hourly_rate as number | null) ?? 15;
+    const discount = result.data.discount_amount ?? (current?.discount_amount as number | null) ?? 0;
     updates['total_hours'] = items.reduce((sum, i) => sum + i.hours, 0);
-    updates['total_amount'] = (updates['total_hours'] as number) * rate;
+    updates['total_amount'] = (updates['total_hours'] as number) * rate - discount;
   }
 
   // Convert to invoice: generate FAT number

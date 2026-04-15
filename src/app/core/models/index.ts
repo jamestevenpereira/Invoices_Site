@@ -16,6 +16,8 @@ export interface Quote {
   notes: string;
   total_hours: number;
   total_amount: number;
+  discount_amount: number;
+  discount_label: string;
   quote_number: string | null;
   sent_at: string | null;
   created_at: string;
@@ -46,6 +48,8 @@ export interface CreateQuotePayload {
   hourly_rate: number;
   items: QuoteItem[];
   notes: string;
+  discount_amount: number;
+  discount_label: string;
 }
 
 export interface UpdateQuotePayload {
@@ -55,4 +59,6 @@ export interface UpdateQuotePayload {
   items?: QuoteItem[];
   notes?: string;
   status?: 'quote' | 'invoice';
+  discount_amount?: number;
+  discount_label?: string;
 }

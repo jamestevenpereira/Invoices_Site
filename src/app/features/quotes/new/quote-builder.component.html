@@ -156,9 +156,49 @@
                 <span class="rate-value">{{ hourlyRate() | currency:'EUR':'symbol':'1.0-0' }}/h</span>
               </div>
             </div>
+
+            <!-- Discount -->
+            <div class="discount-row">
+              <label class="field-label">Desconto <span class="optional">(opcional)</span></label>
+              <div class="discount-fields">
+                <input
+                  class="field-input discount-label-input"
+                  [ngModel]="discountLabel()"
+                  (ngModelChange)="discountLabel.set($event)"
+                  name="discountLabel"
+                  placeholder="ex: Desconto inaugural (1.º projecto + portfólio)"
+                />
+                <div class="discount-amount-wrap">
+                  <span class="discount-symbol">−&nbsp;€</span>
+                  <input
+                    class="field-input discount-amount-input"
+                    type="number"
+                    min="0"
+                    step="5"
+                    [ngModel]="discountAmount()"
+                    (ngModelChange)="discountAmount.set(+$event)"
+                    name="discountAmount"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div class="totals-row">
               <div class="total-hours">{{ totalHours() }}h no total</div>
-              <div class="total-amount">{{ totalAmount() | currency:'EUR':'symbol':'1.2-2' }}</div>
+              <div class="totals-breakdown">
+                @if (discountAmount() > 0) {
+                  <div class="subtotal-line">
+                    <span>Subtotal</span>
+                    <span>{{ subtotal() | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  </div>
+                  <div class="discount-line">
+                    <span>{{ discountLabel() || 'Desconto' }}</span>
+                    <span>− {{ discountAmount() | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  </div>
+                }
+                <div class="total-amount">{{ totalAmount() | currency:'EUR':'symbol':'1.2-2' }}</div>
+              </div>
             </div>
           </div>
         </div>

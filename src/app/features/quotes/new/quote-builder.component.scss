@@ -387,6 +387,68 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ─── Discount ────────────────────────────────────────────────────── */
+.discount-row {
+  display: flex;
+  flex-direction: column;
+  gap: .375rem;
+}
+
+.discount-fields {
+  display: flex;
+  gap: .625rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.discount-label-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.discount-amount-wrap {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+  flex-shrink: 0;
+}
+
+.discount-symbol {
+  font-size: .875rem;
+  color: var(--c-danger);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.discount-amount-input {
+  width: 88px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.totals-breakdown {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .125rem;
+}
+
+.subtotal-line {
+  display: flex;
+  gap: 1rem;
+  font-size: .8rem;
+  color: var(--c-text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.discount-line {
+  display: flex;
+  gap: 1rem;
+  font-size: .8rem;
+  color: var(--c-danger);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ─── Preview wrapper ─────────────────────────────────────────────── */
 .preview-wrapper {
   background: var(--c-surface);
