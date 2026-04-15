@@ -34,12 +34,28 @@
               name="sender_email" placeholder="noreply@a-minha-agencia.pt" />
           </div>
         </div>
+        <div class="fields-row" style="margin-top:.75rem">
+          <div class="field">
+            <label class="field-label">Email do proprietário</label>
+            <input class="field-input" type="email"
+              [ngModel]="ownerEmail()" (ngModelChange)="ownerEmail.set($event)"
+              name="owner_email" placeholder="o-seu-email@dominio.pt" />
+            <span class="field-hint">Recebe cópias de todos os orçamentos enviados</span>
+          </div>
+          <div class="field">
+            <label class="field-label">NIF</label>
+            <input class="field-input" type="text"
+              [ngModel]="nif()" (ngModelChange)="nif.set($event)"
+              name="nif" placeholder="Ex. 123456789" />
+            <span class="field-hint">Aparece em todos os documentos emitidos</span>
+          </div>
+        </div>
         <div class="field" style="margin-top:.75rem">
-          <label class="field-label">Email do proprietário</label>
-          <input class="field-input" type="email"
-            [ngModel]="ownerEmail()" (ngModelChange)="ownerEmail.set($event)"
-            name="owner_email" placeholder="o-seu-email@dominio.pt" />
-          <span class="field-hint">Recebe cópias de todos os orçamentos enviados</span>
+          <label class="field-label">IBAN <span class="optional">(opcional)</span></label>
+          <input class="field-input" type="text"
+            [ngModel]="iban()" (ngModelChange)="iban.set($event)"
+            name="iban" placeholder="Ex. PT50 0000 0000 0000 0000 0000 0" />
+          <span class="field-hint">Mostrado no rodapé das faturas para facilitar o pagamento</span>
         </div>
       </div>
     </div>

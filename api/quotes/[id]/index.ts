@@ -13,9 +13,12 @@ const itemSchema = z.object({
 const schema = z.object({
   client_name: z.string().min(1).optional(),
   client_email: z.string().email().optional(),
+  client_nif: z.string().optional(),
   hourly_rate: z.number().min(1).optional(),
   items: z.array(itemSchema).optional(),
   notes: z.string().optional(),
+  payment_terms: z.string().optional(),
+  valid_until: z.string().nullable().optional(),
   status: z.enum(['invoice']).optional(),
   discount_amount: z.number().min(0).optional(),
   discount_label: z.string().optional(),
@@ -58,7 +61,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     updates['total_amount'] = (updates['total_hours'] as number) * rate - discount;
   }
 
-  // Convert to invoice: generate FAT number
+  // Convert to invoice: generate FAT/YEAR/SEQ number
   if (result.data.status === 'invoice') {
     const { data: current } = await supabase
       .from('quotes')
@@ -68,16 +71,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if ((current?.status as string) === 'quote') {
       const year = new Date().getFullYear();
+      const fatPrefix = `FAT/${year}/`;
       const { data: lastFat } = await supabase
         .from('quotes')
         .select('number')
-        .like('number', `FAT-${year}-%`)
+        .like('number', `${fatPrefix}%`)
         .order('number', { ascending: false })
         .limit(1);
 
       const lastFatNum = (lastFat as Array<{ number: string }> | null)?.[0]?.number;
-      const next = lastFatNum ? parseInt(lastFatNum.split('-')[2], 10) + 1 : 1;
-      updates['number'] = `FAT-${year}-${String(next).padStart(3, '0')}`;
+      const next = lastFatNum ? parseInt(lastFatNum.split('/')[2], 10) + 1 : 1;
+      updates['number'] = `${fatPrefix}${String(next).padStart(3, '0')}`;
       updates['quote_number'] = (current?.number as string | null) ?? null;
     }
   }

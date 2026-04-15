@@ -4,12 +4,18 @@
   <header class="preview-header">
     <div class="header-left">
       <div class="agency">{{ agencyName() }}</div>
+      @if (businessNif()) {
+        <div class="agency-nif">NIF {{ businessNif() }}</div>
+      }
       <div class="agency-sub">Desenvolvimento Web Profissional</div>
     </div>
     <div class="header-right">
       <span class="doc-badge">{{ quote().status === 'invoice' ? 'Fatura' : 'Orçamento' }}</span>
       <div class="doc-number">{{ quote().number }}</div>
       <div class="doc-date">{{ quote().created_at | date:'dd/MM/yyyy' }}</div>
+      @if (quote().status === 'quote' && quote().valid_until) {
+        <div class="doc-validity">Válido até {{ quote().valid_until | date:'dd/MM/yyyy' }}</div>
+      }
     </div>
   </header>
 
@@ -17,6 +23,9 @@
   <div class="client-block">
     <div class="client-label">Faturar a</div>
     <div class="client-name">{{ quote().client_name }}</div>
+    @if (quote().client_nif) {
+      <div class="client-nif">NIF {{ quote().client_nif }}</div>
+    }
     <div class="client-email">{{ quote().client_email }}</div>
   </div>
 
@@ -44,47 +53,4 @@
 
   <!-- ─── Totals ──────────────────────────────────────────────────── -->
   <div class="totals-wrapper">
-    <div class="totals">
-      @if (quote().discount_amount > 0) {
-        <div class="total-row">
-          <span class="t-label">Subtotal</span>
-          <span class="t-value">{{ quote().total_hours * quote().hourly_rate | currency:'EUR':'symbol':'1.2-2' }}</span>
-        </div>
-        <div class="total-row discount-row">
-          <span class="t-label">{{ quote().discount_label || 'Desconto' }}</span>
-          <span class="t-value t-discount">− {{ quote().discount_amount | currency:'EUR':'symbol':'1.2-2' }}</span>
-        </div>
-      }
-      <div class="total-row">
-        <span class="t-label">{{ quote().discount_amount > 0 ? 'Total' : 'Subtotal' }}</span>
-        <span class="t-value">{{ quote().total_amount | currency:'EUR':'symbol':'1.2-2' }}</span>
-      </div>
-      @if (vatMode() === 'exempt') {
-        <div class="vat-note">Isento nos termos do art.º 53.º do CIVA</div>
-      } @else {
-        <div class="total-row">
-          <span class="t-label">IVA (23%)</span>
-          <span class="t-value">{{ quote().total_amount * 0.23 | currency:'EUR':'symbol':'1.2-2' }}</span>
-        </div>
-        <div class="total-row grand">
-          <span class="t-label">Total</span>
-          <span class="t-value">{{ quote().total_amount * 1.23 | currency:'EUR':'symbol':'1.2-2' }}</span>
-        </div>
-      }
-    </div>
-  </div>
-
-  <!-- ─── Notes ───────────────────────────────────────────────────── -->
-  @if (quote().notes) {
-    <div class="notes-block">
-      <div class="notes-label">Notas</div>
-      <div class="notes-text">{{ quote().notes }}</div>
-    </div>
-  }
-
-  <!-- ─── Footer ──────────────────────────────────────────────────── -->
-  <footer class="preview-footer">
-    Obrigado pela preferência &mdash; {{ agencyName() }}
-  </footer>
-
-</div>
+    <div class="totals">

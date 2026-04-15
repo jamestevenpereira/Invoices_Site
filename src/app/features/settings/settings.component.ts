@@ -20,6 +20,8 @@ export class SettingsComponent implements OnInit {
   ownerEmail = signal('');
   agencyName = signal('');
   senderEmail = signal('');
+  nif = signal('');
+  iban = signal('');
   saving = signal(false);
   saved = signal(false);
   saveError = signal('');
@@ -32,6 +34,8 @@ export class SettingsComponent implements OnInit {
       this.ownerEmail.set(s.owner_email);
       this.agencyName.set(s.agency_name ?? '');
       this.senderEmail.set(s.sender_email ?? '');
+      this.nif.set(s.nif ?? '');
+      this.iban.set(s.iban ?? '');
       this.loaded.set(true);
     } catch {
       this.saveError.set('Erro ao carregar definições');
@@ -49,6 +53,8 @@ export class SettingsComponent implements OnInit {
         vat_mode: this.vatMode(),
         agency_name: this.agencyName(),
         sender_email: this.senderEmail(),
+        nif: this.nif(),
+        iban: this.iban(),
       });
       this.saved.set(true);
     } catch {
