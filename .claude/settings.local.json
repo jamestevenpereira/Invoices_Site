@@ -11,7 +11,8 @@
       "Bash(npm run:*)",
       "Bash(python -c \"import json; a=json.load\\(open\\(''angular.json''\\)\\); prod=a[''projects''][''invoices-site''][''architect''][''build''][''configurations''][''production'']; print\\(json.dumps\\(prod, indent=2\\)\\)\")",
       "Bash(npx jest:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "mcp__plugin_context-mode_context-mode__ctx_search"
     ]
   }
 }
