@@ -21,6 +21,7 @@ export interface Quote {
   total_amount: number;
   discount_amount: number;
   discount_label: string;
+  payment_status: 'pending' | 'paid' | 'overdue';
   quote_number: string | null;
   sent_at: string | null;
   created_at: string;
@@ -72,4 +73,5 @@ export interface UpdateQuotePayload {
   status?: 'quote' | 'invoice';
   discount_amount?: number;
   discount_label?: string;
+  payment_status?: 'pending' | 'paid' | 'overdue';
 }

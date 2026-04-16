@@ -22,6 +22,7 @@ const schema = z.object({
   status: z.enum(['invoice']).optional(),
   discount_amount: z.number().min(0).optional(),
   discount_label: z.string().optional(),
+  payment_status: z.enum(['pending', 'paid', 'overdue']).optional(),
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
