@@ -14,10 +14,26 @@ jest.mock('@supabase/supabase-js', () => ({
 global.fetch = jest.fn();
 
 const mockQuote = {
-  id: 'uuid-1', number: 'ORC-2026-001', client_name: 'Clínica X',
-  client_email: 'info@clinica.pt', status: 'quote', hourly_rate: 15,
-  items: [], notes: '', total_hours: 0, total_amount: 0,
-  quote_number: null, sent_at: null, created_at: '', updated_at: '',
+  id: 'uuid-1',
+  number: 'ORC-2026-001',
+  client_name: 'Clínica X',
+  client_email: 'info@clinica.pt',
+  client_nif: '',
+  status: 'quote',
+  payment_status: 'pending',
+  hourly_rate: 15,
+  items: [],
+  notes: '',
+  payment_terms: '',
+  valid_until: null,
+  total_hours: 0,
+  total_amount: 0,
+  discount_amount: 0,
+  discount_label: '',
+  quote_number: null,
+  sent_at: null,
+  created_at: '',
+  updated_at: '',
 };
 
 describe('QuoteService', () => {
@@ -35,8 +51,11 @@ describe('QuoteService', () => {
   it('createQuote() calls POST /api/quotes and returns Quote', async () => {
     (fetch as jest.Mock).mockResolvedValue({ ok: true, status: 201, json: async () => mockQuote });
     const result = await service.createQuote({
-      client_name: 'Clínica X', client_email: 'info@clinica.pt',
-      hourly_rate: 15, items: [], notes: '',
+      client_name: 'Clínica X',
+      client_email: 'info@clinica.pt',
+      hourly_rate: 15,
+      items: [],
+      notes: '',
     });
     expect(fetch).toHaveBeenCalledWith('/api/quotes', expect.objectContaining({ method: 'POST' }));
     expect(result.number).toBe('ORC-2026-001');
@@ -46,13 +65,23 @@ describe('QuoteService', () => {
     const invoice = { ...mockQuote, status: 'invoice', number: 'FAT-2026-001' };
     (fetch as jest.Mock).mockResolvedValue({ ok: true, status: 200, json: async () => invoice });
     const result = await service.convertToInvoice('uuid-1');
-    expect(fetch).toHaveBeenCalledWith('/api/quotes/uuid-1', expect.objectContaining({ method: 'PUT' }));
+    expect(fetch).toHaveBeenCalledWith(
+      '/api/quotes/uuid-1',
+      expect.objectContaining({ method: 'PUT' }),
+    );
     expect(result.status).toBe('invoice');
   });
 
   it('createQuote() throws when apiRequest returns undefined', async () => {
     (fetch as jest.Mock).mockResolvedValue({ ok: true, status: 204 });
-    await expect(service.createQuote({ client_name: 'X', client_email: 'x@test.pt', hourly_rate: 15, items: [], notes: '' }))
-      .rejects.toThrow('Resposta inválida');
+    await expect(
+      service.createQuote({
+        client_name: 'X',
+        client_email: 'x@test.pt',
+        hourly_rate: 15,
+        items: [],
+        notes: '',
+      }),
+    ).rejects.toThrow('Resposta inválida');
   });
 });

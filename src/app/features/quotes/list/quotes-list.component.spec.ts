@@ -5,9 +5,28 @@ import { QuotePdfService } from '../../../core/services/quote-pdf.service';
 import { provideRouter } from '@angular/router';
 
 const mockQuotes = [
-  { id: '1', number: 'ORC-2026-001', client_name: 'Clínica X', client_email: 'x@test.pt',
-    status: 'quote', hourly_rate: 15, items: [], notes: '', total_hours: 8, total_amount: 120,
-    quote_number: null, sent_at: null, created_at: '2026-03-18T10:00:00Z', updated_at: '2026-03-18T10:00:00Z' },
+  {
+    id: '1',
+    number: 'ORC-2026-001',
+    client_name: 'Clínica X',
+    client_email: 'x@test.pt',
+    client_nif: '',
+    status: 'quote',
+    payment_status: 'pending',
+    hourly_rate: 15,
+    items: [],
+    notes: '',
+    payment_terms: '',
+    valid_until: null,
+    total_hours: 8,
+    total_amount: 120,
+    discount_amount: 0,
+    discount_label: '',
+    quote_number: null,
+    sent_at: null,
+    created_at: '2026-03-18T10:00:00Z',
+    updated_at: '2026-03-18T10:00:00Z',
+  },
 ];
 
 describe('QuotesListComponent', () => {

@@ -18,11 +18,26 @@ jest.mock('jspdf', () => ({
 }));
 
 const mockQuote: Quote = {
-  id: 'uuid-1', number: 'ORC-2026-001', client_name: 'Test Client',
-  client_email: 'test@example.com', status: 'quote', hourly_rate: 15,
+  id: 'uuid-1',
+  number: 'ORC-2026-001',
+  client_name: 'Test Client',
+  client_email: 'test@example.com',
+  client_nif: '',
+  status: 'quote',
+  payment_status: 'pending',
+  hourly_rate: 15,
   items: [{ service_id: 's1', name: 'Homepage', hours: 8, subtotal: 120 }],
-  notes: '', total_hours: 8, total_amount: 120,
-  quote_number: null, sent_at: null, created_at: '2026-03-18', updated_at: '2026-03-18',
+  notes: '',
+  payment_terms: '',
+  valid_until: null,
+  total_hours: 8,
+  total_amount: 120,
+  discount_amount: 0,
+  discount_label: '',
+  quote_number: null,
+  sent_at: null,
+  created_at: '2026-03-18',
+  updated_at: '2026-03-18',
 };
 
 describe('QuotePdfService', () => {
@@ -46,6 +61,6 @@ describe('QuotePdfService', () => {
     service.generatePdf(mockQuote);
     const instance = jsPDF.mock.results[0].value;
     const textCalls = instance.text.mock.calls.map((c: unknown[]) => c[0] as string);
-    expect(textCalls.some(t => t.includes('Test Client'))).toBe(true);
+    expect(textCalls.some((t) => t.includes('Test Client'))).toBe(true);
   });
 });
