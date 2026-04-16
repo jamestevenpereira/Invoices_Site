@@ -39,9 +39,7 @@ export class QuoteBuilderComponent implements OnInit {
       const rate = this.hourlyRate();
       // Update all item subtotals when rate changes
       untracked(() => {
-        this.items.update((list) =>
-          list.map((i) => ({ ...i, subtotal: i.hours * rate })),
-        );
+        this.items.update((list) => list.map((i) => ({ ...i, subtotal: i.hours * rate })));
       });
     });
   }
@@ -75,12 +73,12 @@ export class QuoteBuilderComponent implements OnInit {
   categories = computed(() => {
     const search = this.searchTerm().toLowerCase();
     if (!search) return this.categoriesSource();
-    
+
     // Valid categories are those that contain at least one service matching the search
-    return this.categoriesSource().filter(cat => 
-      this.servicesByCategorySource()[cat].some(s => 
-        s.name.toLowerCase().includes(search) || cat.toLowerCase().includes(search)
-      )
+    return this.categoriesSource().filter((cat) =>
+      this.servicesByCategorySource()[cat].some(
+        (s) => s.name.toLowerCase().includes(search) || cat.toLowerCase().includes(search),
+      ),
     );
   });
 
@@ -91,8 +89,8 @@ export class QuoteBuilderComponent implements OnInit {
 
     const filtered: Record<string, Service[]> = {};
     for (const cat of this.categories()) {
-      filtered[cat] = source[cat].filter(s => 
-        s.name.toLowerCase().includes(search) || cat.toLowerCase().includes(search)
+      filtered[cat] = source[cat].filter(
+        (s) => s.name.toLowerCase().includes(search) || cat.toLowerCase().includes(search),
       );
     }
     return filtered;
@@ -101,13 +99,15 @@ export class QuoteBuilderComponent implements OnInit {
   showPreview = signal(false);
 
   isValid = computed(() => {
-    return this.clientName().trim().length > 0 && 
-           this.clientEmail().trim().length > 0 && 
-           this.items().length > 0;
+    return (
+      this.clientName().trim().length > 0 &&
+      this.clientEmail().trim().length > 0 &&
+      this.items().length > 0
+    );
   });
 
   isEditMode = computed(() => this.editId() !== null);
-  pageTitle = computed(() => this.isEditMode() ? 'Editar Orçamento' : 'Novo Orçamento');
+  pageTitle = computed(() => (this.isEditMode() ? 'Editar Orçamento' : 'Novo Orçamento'));
 
   totalHours = computed(() => this.items().reduce((s, i) => s + i.hours, 0));
   subtotal = computed(() => this.totalHours() * this.hourlyRate());
@@ -122,6 +122,7 @@ export class QuoteBuilderComponent implements OnInit {
       client_email: this.clientEmail() || '',
       client_nif: this.clientNif(),
       status: 'quote',
+      payment_status: eq?.payment_status ?? 'pending',
       hourly_rate: this.hourlyRate(),
       items: this.items(),
       notes: this.notes(),
