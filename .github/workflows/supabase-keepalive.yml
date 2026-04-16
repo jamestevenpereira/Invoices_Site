@@ -11,12 +11,19 @@ jobs:
     steps:
       - name: Ping Supabase
         run: |
+          echo "=== REST API (com chave) ==="
           curl -s \
             "https://rguwiaxjapotlsvpvgpt.supabase.co/rest/v1/" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -o /dev/null -w "Status: %{http_code}\n"
+            -w "\nHTTP Status: %{http_code}\n"
 
+          echo "=== Auth Health (sem chave) ==="
           curl -s \
             "https://rguwiaxjapotlsvpvgpt.supabase.co/auth/v1/health" \
-            -o /dev/null -w "Auth Health: %{http_code}\n"
+            -w "\nHTTP Status: %{http_code}\n"
+
+          echo "=== REST root (sem chave) ==="
+          curl -s \
+            "https://rguwiaxjapotlsvpvgpt.supabase.co/" \
+            -w "\nHTTP Status: %{http_code}\n"
