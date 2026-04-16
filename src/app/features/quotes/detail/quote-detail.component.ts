@@ -75,6 +75,17 @@ export class QuoteDetailComponent implements OnInit {
     }
   }
 
+  async setPaymentStatus(status: 'paid' | 'overdue' | 'pending') {
+    const q = this.quote();
+    if (!q) return;
+    try {
+      const updated = await this.quoteService.updateQuote(q.id, { payment_status: status });
+      this.quote.set(updated);
+    } catch (e: unknown) {
+      this.error.set(e instanceof Error ? e.message : 'Erro ao actualizar estado');
+    }
+  }
+
   async convert() {
     const q = this.quote();
     if (!q) return;

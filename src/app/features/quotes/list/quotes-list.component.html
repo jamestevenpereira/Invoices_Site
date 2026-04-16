@@ -43,10 +43,17 @@
               <a [routerLink]="['/admin/quotes', q.id]" class="doc-link">{{ q.number }}</a>
             </td>
             <td class="client-cell">{{ q.client_name }}</td>
-            <td>
+            <td class="status-cell">
               <span class="badge" [class.badge-invoice]="q.status === 'invoice'" [class.badge-quote]="q.status === 'quote'">
                 {{ q.status === 'invoice' ? 'Fatura' : 'Orçamento' }}
               </span>
+              @if (q.status === 'invoice') {
+                <span class="badge-payment"
+                  [class.badge-payment--paid]="q.payment_status === 'paid'"
+                  [class.badge-payment--overdue]="q.payment_status === 'overdue'">
+                  {{ q.payment_status === 'paid' ? 'Pago' : q.payment_status === 'overdue' ? 'Em Atraso' : 'Pendente' }}
+                </span>
+              }
             </td>
             <td class="amount-cell right">{{ q.total_amount | currency:'EUR':'symbol':'1.2-2' }}</td>
             <td class="date-cell">{{ q.created_at | date:'dd MMM yyyy' }}</td>
