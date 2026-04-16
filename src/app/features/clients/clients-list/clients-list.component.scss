@@ -1,0 +1,93 @@
+.clients { padding: 2rem; }
+
+.page-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.page-subtitle {
+  font-size: .875rem;
+  color: var(--c-text-muted);
+}
+
+.error { color: var(--c-danger); }
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--c-text);
+  margin-bottom: .375rem;
+}
+
+.empty-sub {
+  font-size: .875rem;
+  color: var(--c-text-muted);
+}
+
+.table-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .875rem;
+
+  thead tr {
+    background: var(--c-bg);
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  th {
+    padding: .75rem 1.25rem;
+    text-align: left;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--c-text-muted);
+
+    &.right  { text-align: right; }
+    &.center { text-align: center; }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--c-border);
+    &:last-child { border-bottom: none; }
+    &:hover { background: #fafbff; }
+  }
+
+  td {
+    padding: 1rem 1.25rem;
+    color: var(--c-text);
+    vertical-align: middle;
+
+    &.right  { text-align: right; }
+    &.center { text-align: center; }
+  }
+}
+
+.client-name  { font-weight: 500; }
+.client-email { font-size: .8rem; color: var(--c-text-muted); margin-top: .125rem; }
+.nif          { font-size: .8125rem; color: var(--c-text-2); font-variant-numeric: tabular-nums; }
+.amount       { font-weight: 600; font-variant-numeric: tabular-nums; }

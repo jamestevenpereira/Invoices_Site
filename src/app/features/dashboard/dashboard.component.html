@@ -1,0 +1,62 @@
+<div class="dashboard">
+  <h1 class="page-title">Dashboard</h1>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-label">Total Faturado</span>
+      <span class="stat-value">{{ totalInvoiced() | currency:'EUR':'symbol':'1.2-2':'pt' }}</span>
+    </div>
+    <div class="stat-card stat-card--paid">
+      <span class="stat-label">Pago</span>
+      <span class="stat-value">{{ totalPaid() | currency:'EUR':'symbol':'1.2-2':'pt' }}</span>
+    </div>
+    <div class="stat-card stat-card--pending">
+      <span class="stat-label">Pendente</span>
+      <span class="stat-value">{{ totalPending() | currency:'EUR':'symbol':'1.2-2':'pt' }}</span>
+    </div>
+    <div class="stat-card stat-card--overdue">
+      <span class="stat-label">Em Atraso</span>
+      <span class="stat-value">{{ totalOverdue() | currency:'EUR':'symbol':'1.2-2':'pt' }}</span>
+    </div>
+  </div>
+
+  <section class="recent">
+    <h2>Faturas Recentes</h2>
+    @if (recentInvoices().length === 0) {
+      <p class="empty">Sem faturas ainda.</p>
+    } @else {
+      <div class="table-card">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Cliente</th>
+              <th class="right">Total</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (inv of recentInvoices(); track inv.id) {
+              <tr>
+                <td><a [routerLink]="['/admin/quotes', inv.id]" class="doc-link">{{ inv.number }}</a></td>
+                <td>{{ inv.client_name }}</td>
+                <td class="right amount">{{ inv.total_amount | currency:'EUR':'symbol':'1.2-2':'pt' }}</td>
+                <td>
+                  <span class="badge-payment"
+                    [class.badge-payment--paid]="inv.payment_status === 'paid'"
+                    [class.badge-payment--overdue]="inv.payment_status === 'overdue'">
+                    {{ inv.payment_status === 'paid' ? 'Pago' : inv.payment_status === 'overdue' ? 'Em Atraso' : 'Pendente' }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

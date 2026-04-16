@@ -1,0 +1,45 @@
+<div class="clients">
+  <div class="page-header">
+    <h1 class="page-title">Clientes</h1>
+    <p class="page-subtitle">{{ clients().length }} cliente{{ clients().length !== 1 ? 's' : '' }}</p>
+  </div>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (clients().length === 0) {
+    <div class="empty-state">
+      <p class="empty-title">Sem clientes ainda</p>
+      <p class="empty-sub">Os clientes aparecem aqui automaticamente quando criares orçamentos.</p>
+    </div>
+  } @else {
+    <div class="table-card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>NIF</th>
+            <th class="center">Orçamentos</th>
+            <th class="center">Faturas</th>
+            <th class="right">Total Faturado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (client of clients(); track client.email) {
+            <tr>
+              <td>
+                <div class="client-name">{{ client.name }}</div>
+                <div class="client-email">{{ client.email }}</div>
+              </td>
+              <td class="nif">{{ client.nif || '—' }}</td>
+              <td class="center">{{ client.quoteCount }}</td>
+              <td class="center">{{ client.invoiceCount }}</td>
+              <td class="right amount">{{ client.totalInvoiced | currency:'EUR':'symbol':'1.2-2':'pt' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

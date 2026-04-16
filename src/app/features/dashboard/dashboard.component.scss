@@ -1,0 +1,125 @@
+.dashboard { padding: 2rem; }
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--c-text);
+}
+
+.error { color: var(--c-danger); }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: var(--shadow);
+
+  &--paid    { border-left: 4px solid #16a34a; }
+  &--pending { border-left: 4px solid #ca8a04; }
+  &--overdue { border-left: 4px solid #dc2626; }
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--c-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text);
+}
+
+.recent h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--c-text);
+}
+
+.empty { color: var(--c-text-muted); font-size: .875rem; }
+
+.table-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .875rem;
+
+  thead tr {
+    background: var(--c-bg);
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  th {
+    padding: .75rem 1.25rem;
+    text-align: left;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--c-text-muted);
+
+    &.right { text-align: right; }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--c-border);
+    &:last-child { border-bottom: none; }
+    &:hover { background: #fafbff; }
+  }
+
+  td {
+    padding: .875rem 1.25rem;
+    color: var(--c-text);
+    vertical-align: middle;
+
+    &.right { text-align: right; }
+  }
+}
+
+.doc-link {
+  color: var(--c-primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  &:hover { text-decoration: underline; }
+}
+
+.amount { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.badge-payment {
+  display: inline-flex;
+  align-items: center;
+  padding: .2rem .55rem;
+  border-radius: 999px;
+  font-size: .68rem;
+  font-weight: 600;
+  background: #fef9c3;
+  color: #ca8a04;
+
+  &--paid    { background: #dcfce7; color: #16a34a; }
+  &--overdue { background: #fee2e2; color: #dc2626; }
+}
